@@ -1,0 +1,154 @@
+'''
+4.3 Zadanie 3
+• Stwórz graf skierowany z losowymi wagami na krawędziach, reprezentującymi przepustowość.
+• Zdefiniuj węzeł źródłowy i węzeł ujściowy.
+• Użyj funkcji nx.maximum_flow do obliczenia maksymalnego przepływu w grafie między
+źródłem a ujściem.
+• Wyświetl krawędzie o największej przepustowości w znalezionym maksymalnym przepływie.
+'''
+# Wersja z NetworkX
+import networkx as nx
+import random
+
+def create_directed_graph():
+    # Tworzenie skierowanego grafu
+    graph = nx.DiGraph()
+
+    # Dodawanie węzłów (miasta)
+    nodes = ["Miasto_A", "Miasto_B", "Miasto_C", "Miasto_D", "Miasto_E", 
+             "Miasto_F", "Miasto_G", "Miasto_H"]
+    graph.add_nodes_from(nodes)
+
+    # Dodawanie krawędzi z losowymi wagami reprezentującymi przepustowość
+    edges = [
+        ("Miasto_A", "Miasto_B"),
+        ("Miasto_A", "Miasto_C"),
+        ("Miasto_B", "Miasto_D"),
+        ("Miasto_B", "Miasto_E"),
+        ("Miasto_C", "Miasto_F"),
+        ("Miasto_D", "Miasto_E"),
+        ("Miasto_D", "Miasto_G"),
+        ("Miasto_E", "Miasto_H"),
+        ("Miasto_F", "Miasto_H"),
+        ("Miasto_G", "Miasto_H")
+    ]
+
+    for edge in edges:
+        graph.add_edge(edge[0], edge[1], capacity=random.randint(5, 20))
+
+    return graph
+
+if __name__ == "__main__":
+    # Tworzenie grafu skierowanego
+    graph = create_directed_graph()
+
+    # Definiowanie węzła źródłowego i ujściowego
+    source = "Miasto_A"
+    sink = "Miasto_H"
+
+    # Obliczanie maksymalnego przepływu
+    flow_value, flow_dict = nx.maximum_flow(graph, source, sink)
+
+    # Wyświetlenie wyniku
+    print(f"Maksymalny przepływ z {source} do {sink}: {flow_value}")
+
+    print("Krawędzie o największej przepustowości:")
+    for u, flows in flow_dict.items():
+        for v, flow in flows.items():
+            if flow > 0:
+                print(f"{u} -> {v} z przepływem {flow}")
+
+
+# Wersja from scratch
+from collections import deque
+import random
+
+class Graph:
+    def __init__(self, nodes):
+        self.nodes = nodes
+        self.graph = {node: {} for node in nodes}
+    
+    def add_edge(self, u, v, capacity):
+        self.graph[u][v] = capacity
+        self.graph[v][u] = 0  # Krawędź odwrotna dla algorytmu
+
+    def bfs(self, source, sink, parent):
+        visited = {node: False for node in self.nodes}
+        queue = deque([source])
+        visited[source] = True
+
+        while queue:
+            current = queue.popleft()
+            for neighbor, capacity in self.graph[current].items():
+                if not visited[neighbor] and capacity > 0:  # Szukaj ścieżki z dodatnią przepustowością
+                    queue.append(neighbor)
+                    visited[neighbor] = True
+                    parent[neighbor] = current
+                    if neighbor == sink:
+                        return True
+        return False
+
+    def edmonds_karp(self, source, sink):
+        parent = {}
+        max_flow = 0
+        flows = []
+
+        while self.bfs(source, sink, parent):
+            # Znajdź przepływ przez ścieżkę
+            path_flow = float('Inf')
+            s = sink
+            while s != source:
+                path_flow = min(path_flow, self.graph[parent[s]][s])
+                s = parent[s]
+            max_flow += path_flow
+
+            # Aktualizuj graf residualny
+            v = sink
+            while v != source:
+                u = parent[v]
+                self.graph[u][v] -= path_flow
+                self.graph[v][u] += path_flow
+                flows.append((u, v, path_flow))
+                v = parent[v]
+        
+        return max_flow, flows
+
+
+if __name__ == "__main__":
+    # Definiowanie węzłów i krawędzi
+    nodes = ["Miasto_A", "Miasto_B", "Miasto_C", "Miasto_D", "Miasto_E", 
+             "Miasto_F", "Miasto_G", "Miasto_H"]
+
+    edges = [
+        ("Miasto_A", "Miasto_B"),
+        ("Miasto_A", "Miasto_C"),
+        ("Miasto_B", "Miasto_D"),
+        ("Miasto_B", "Miasto_E"),
+        ("Miasto_C", "Miasto_F"),
+        ("Miasto_D", "Miasto_E"),
+        ("Miasto_D", "Miasto_G"),
+        ("Miasto_E", "Miasto_H"),
+        ("Miasto_F", "Miasto_H"),
+        ("Miasto_G", "Miasto_H")
+    ]
+
+    # Tworzenie grafu
+    graph = Graph(nodes)
+    for u, v in edges:
+        capacity = random.randint(5, 20)
+        graph.add_edge(u, v, capacity)
+
+    # Definiowanie źródła i ujścia
+    source = "Miasto_A"
+    sink = "Miasto_H"
+
+    # Obliczanie maksymalnego przepływu
+    max_flow, flows = graph.edmonds_karp(source, sink)
+
+    # Wyświetlenie wyniku
+    print(f"Maksymalny przepływ z {source} do {sink}: {max_flow}")
+    print("Krawędzie o największej przepustowości:")
+    for u, v, flow in flows:
+        if flow > 0:
+            print(f"{u} -> {v} z przepływem {flow}")
+

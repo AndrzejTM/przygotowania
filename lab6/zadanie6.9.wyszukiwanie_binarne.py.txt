@@ -1,0 +1,46 @@
+'''
+Napisz program, który generuje losow¹ listê, sortuje j¹ i pozwala u¿ytkownikowi 
+wyszukiwaæ elementy za pomoc¹ wyszukiwania binarnego
+
+def generuj_liste(rozmiar, zakres):        
+	return [random.randint(0, zakres) for _ in range(rozmiar)] 
+
+'''
+import random
+
+def generuj_liste(rozmiar, zakres):
+    """Generuje losow¹ listê liczb ca³kowitych."""
+    return [random.randint(0, zakres) for _ in range(rozmiar)]
+
+def wyszukiwanie_binarne(lista, element):
+    """
+    Wykonuje wyszukiwanie binarne w posortowanej liœcie.
+    Zwraca indeks elementu, jeœli jest obecny, w przeciwnym razie -1.
+    """
+    lewo, prawo = 0, len(lista) - 1
+    while lewo <= prawo:
+        srodek = (lewo + prawo) // 2
+        if lista[srodek] == element:
+            return srodek
+        elif lista[srodek] < element:
+            lewo = srodek + 1
+        else:
+            prawo = srodek - 1
+    return -1
+
+# G³ówna czêœæ programu
+if __name__ == "__main__":
+    rozmiar = int(input("Podaj rozmiar listy: "))
+    zakres = int(input("Podaj maksymaln¹ wartoœæ w liœcie: "))
+    
+    lista = generuj_liste(rozmiar, zakres)
+    lista.sort()  # Sortowanie listy
+    print("Posortowana lista:", lista)
+    
+    element = int(input("Podaj liczbê do wyszukania: "))
+    indeks = wyszukiwanie_binarne(lista, element)
+    
+    if indeks != -1:
+        print(f"Liczba {element} znajduje siê na indeksie {indeks}.")
+    else:
+        print(f"Liczba {element} nie zosta³a znaleziona w liœcie.")

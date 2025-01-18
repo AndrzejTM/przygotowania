@@ -1,0 +1,61 @@
+'''
+Otrzymujesz listê liczb. U¿yj algorytmu sortowania, aby znaleŸæ element najczêœciej wystêpuj¹cy w liœcie.
+
+def generuj_liste(rozmiar, zakres):        
+	return [random.randint(0, zakres) for _ in range(rozmiar)] 
+
+zapisz wygenerowan¹ listê 100 wartoœci do pliku. Nastêpnie otwórz plik i zaimportuj listê wartoœci do listy
+ i wykonaj zadanie
+'''
+import random
+
+# Funkcja do generowania listy liczb
+def generuj_liste(rozmiar, zakres):
+    return [random.randint(0, zakres) for _ in range(rozmiar)]
+
+# Generowanie listy 100 wartoœci z zakresu 0-50
+rozmiar = 100
+zakres = 50
+lista = generuj_liste(rozmiar, zakres)
+
+# Zapisanie listy do zwyk³ego pliku tekstowego
+plik = "lista_liczb.txt"
+with open(plik, "w") as f:
+    for liczba in lista:
+        f.write(f"{liczba}\n")
+
+print(f"Lista zosta³a zapisana do pliku {plik}.")
+
+# Odczytanie listy z pliku
+zaimportowana_lista = []
+with open(plik, "r") as f:
+    for linia in f:
+        zaimportowana_lista.append(int(linia.strip()))
+
+print(f"Zaimportowana lista: {zaimportowana_lista}")
+
+# Sortowanie listy i znalezienie najczêœciej wystêpuj¹cego elementu
+zaimportowana_lista.sort()
+
+# Znalezienie najczêœciej wystêpuj¹cego elementu
+najczestszy_element = None
+liczba_wystapien = 0
+obecny_element = None
+obecne_wystapienia = 0
+
+for liczba in zaimportowana_lista:
+    if liczba == obecny_element:
+        obecne_wystapienia += 1
+    else:
+        if obecne_wystapienia > liczba_wystapien:
+            najczestszy_element = obecny_element
+            liczba_wystapien = obecne_wystapienia
+        obecny_element = liczba
+        obecne_wystapienia = 1
+
+# Sprawdzenie ostatniego elementu
+if obecne_wystapienia > liczba_wystapien:
+    najczestszy_element = obecny_element
+    liczba_wystapien = obecne_wystapienia
+
+print(f"Najczêœciej wystêpuj¹cy element to {najczestszy_element}, który wystêpuje {liczba_wystapien} razy.")

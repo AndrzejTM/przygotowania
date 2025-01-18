@@ -1,0 +1,47 @@
+'''
+Zadanie 2: Archiwizacja plików
+1.
+W pliku ZIP archive.zip znajdują się pliki tekstowe.
+2.
+Rozpakuj plik ZIP do katalogu o nazwie rozpakowane.
+3.
+Sprawdź rozmiar każdego pliku w katalogu rozpakowane i wypisz je w formacie: Nazwa pliku - Rozmiar (bajtów).
+Rozszerzenie Zarchiwizuj wszystkie pliki z katalogu rozpakowane do nowego pliku ZIP o nazwie new_archive.zip.
+'''
+
+import os
+import zipfile
+
+# Ścieżki do plików i folderów
+zip_file_path = '/mnt/data/archive.zip'  # Plik wejściowy ZIP
+extract_dir = '/mnt/data/rozpakowane'   # Folder, do którego rozpakujemy pliki
+new_zip_path = '/mnt/data/new_archive.zip'  # Nowy plik ZIP
+
+# Krok 1: Rozpakowanie pliku ZIP
+# Tworzymy folder, jeśli nie istnieje
+os.makedirs(extract_dir, exist_ok=True)
+
+# Otwieramy plik ZIP i rozpakowujemy jego zawartość
+with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+    zip_ref.extractall(extract_dir)  # Rozpakowanie wszystkich plików do folderu "rozpakowane"
+
+print("Pliki zostały rozpakowane do folderu:", extract_dir)
+
+# Krok 2: Sprawdzenie rozmiaru każdego pliku w folderze
+file_sizes = {}  # Słownik do przechowywania rozmiarów plików
+for root, dirs, files in os.walk(extract_dir):
+    for file_name in files:
+        file_path = os.path.join(root, file_name)  # Pełna ścieżka do pliku
+        size = os.path.getsize(file_path)  # Rozmiar pliku w bajtach
+        file_sizes[file_name] = size  # Dodanie rozmiaru do słownika
+        print(f"{file_name} - {size} bajtów")  # Wypisanie nazwy pliku i jego rozmiaru
+
+# Krok 3: Zarchiwizowanie plików do nowego pliku ZIP
+with zipfile.ZipFile(new_zip_path, 'w') as new_zip:
+    for root, dirs, files in os.walk(extract_dir):
+        for file_name in files:
+            file_path = os.path.join(root, file_name)  # Pełna ścieżka do pliku
+            arcname = os.path.relpath(file_path, extract_dir)  # Relatywna ścieżka w archiwum ZIP
+            new_zip.write(file_path, arcname)  # Dodanie pliku do nowego ZIP
+
+print("Nowy plik ZIP został utworzony:", new_zip_path)

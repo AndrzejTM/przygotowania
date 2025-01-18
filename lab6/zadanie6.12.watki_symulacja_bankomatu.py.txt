@@ -1,0 +1,61 @@
+'''
+Zadanie 1. 
+Symulacja bankomatu 
+Stwórz program (funckja lub klasa) symuluj¹cy dzia³anie bankomatu, 
+w którym kilka klientów (w¹tków) próbuje równoczeœnie wyp³acaæ 
+pieni¹dze z jednego konta bankowego. 
+U¿yj mechanizmu synchronizacji, aby upewniæ siê, 
+¿e saldo konta nigdy nie spadnie poni¿ej zera 
+(rozwa¿ sytuacjê, ¿e w przypadku tak delikatnych operacji nale¿y 
+przewidzieæ problem race condition i zakleszczeñ). 
+1. Pocz¹tkowe saldo: 100 z³. 
+2. Klienci wyp³acaj¹ losowe kwoty (10-50 z³). 
+3. Funkcja withdraw(client_id): 
+– Sprawdza dostêpne saldo. 
+– Jeœli mo¿liwe, zmniejsza saldo i wypisuje komunikat. 
+– W przeciwnym razie wypisuje komunikat o braku œrodków. 
+'''
+
+import threading
+import random
+import time
+
+class BankAccount:
+    def __init__(self, initial_balance):
+        self.balance = initial_balance
+        self.lock = threading.Lock()
+
+    def withdraw(self, client_id, amount):
+        with self.lock:  # Synchronizacja za pomoc¹ blokady
+            if self.balance >= amount:
+                print(f"Klient {client_id}: Próba wyp³aty {amount} z³. Aktualne saldo: {self.balance} z³.")
+                time.sleep(random.uniform(0.1, 0.5))  # Symulacja opóŸnienia
+                self.balance -= amount
+                print(f"Klient {client_id}: Wyp³ata udana. Nowe saldo: {self.balance} z³.")
+            else:
+                print(f"Klient {client_id}: Próba wyp³aty {amount} z³. Brak œrodków. Aktualne saldo: {self.balance} z³.")
+
+def client_behavior(account, client_id):
+    while True:
+        amount = random.randint(10, 50)  # Losowa kwota do wyp³aty
+        account.withdraw(client_id, amount)
+        time.sleep(random.uniform(0.5, 2))  # Symulacja czasu miêdzy operacjami
+
+if __name__ == "__main__":
+    initial_balance = 100  # Pocz¹tkowe saldo
+    account = BankAccount(initial_balance)
+
+    # Tworzenie klientów (w¹tków)
+    threads = []
+    for i in range(5):  # Piêciu klientów
+        thread = threading.Thread(target=client_behavior, args=(account, i + 1))
+        threads.append(thread)
+        thread.start()
+
+    # Pozwól w¹tkom dzia³aæ przez okreœlony czas
+    time.sleep(10)
+
+    # Koñcowe saldo
+    print(f"Koñcowe saldo: {account.balance} z³.")
+
+    # Zatrzymanie w¹tków (w Pythonie w¹tki daemon zatrzymaj¹ siê, gdy proces siê zakoñczy)

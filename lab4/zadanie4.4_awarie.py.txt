@@ -1,0 +1,161 @@
+'''
+4.4 Zadanie 4
+• Stwórz graf z 20-30 węzłami, reprezentującymi komputery lub serwery, z losowymi połączeniami
+między nimi.
+• Usuń kilka losowych krawędzi, aby zasymulować awarie połączeń.
+• Sprawdź, czy graf jest nadal spójny po awariach, używając funkcji do znajdowania komponentów
+spójnych.
+• Wyznacz średnią długość najkrótszej ścieżki w grafie przed i po usunięciu krawędzi.
+'''
+
+import networkx as nx
+import random
+
+# Krok 1: Stwórz graf z losowymi połączeniami
+G = nx.Graph()
+nodes = range(20, 31)  # Węzły od 20 do 30
+G.add_nodes_from(nodes)
+
+# Dodaj losowe krawędzie
+for _ in range(40):  # Dodajemy około 40 losowych krawędzi
+    u = random.choice(list(G.nodes))
+    v = random.choice(list(G.nodes))
+    if u != v:
+        G.add_edge(u, v)
+
+# Funkcja do obliczania średniej długości najkrótszych ścieżek
+def average_shortest_path_length(graph):
+    if nx.is_connected(graph):
+        return nx.average_shortest_path_length(graph)
+    else:
+        components = nx.connected_components(graph)
+        total_length = 0
+        total_pairs = 0
+        for component in components:
+            subgraph = graph.subgraph(component)
+            total_length += nx.average_shortest_path_length(subgraph) * len(subgraph)
+            total_pairs += len(subgraph)
+        return total_length / total_pairs
+
+# Krok 2: Usuń kilka losowych krawędzi (symulacja awarii)
+removed_edges = random.sample(G.edges, 5)  # Usuń 5 losowych krawędzi
+G.remove_edges_from(removed_edges)
+
+# Krok 3: Sprawdź, czy graf jest spójny
+is_connected = nx.is_connected(G)
+components = list(nx.connected_components(G))
+
+# Krok 4: Oblicz średnią długość najkrótszej ścieżki przed i po usunięciu krawędzi
+G_before_removal = G.copy()
+G_before_removal.add_edges_from(removed_edges)  # Przywróć krawędzie do oryginalnego grafu
+
+avg_length_before = average_shortest_path_length(G_before_removal)
+avg_length_after = average_shortest_path_length(G)
+
+print("Czy graf jest spójny po awariach:", is_connected)
+print("Liczba komponentów spójnych:", len(components))
+print("Średnia długość najkrótszej ścieżki przed awariami:", avg_length_before)
+print("Średnia długość najkrótszej ścieżki po awariach:", avg_length_after)
+
+# Wersja from scratch
+
+import random
+from collections import defaultdict, deque
+
+# Krok 1: Stwórz graf od podstaw
+def create_graph():
+    nodes = list(range(20, 31))  # Węzły od 20 do 30
+    edges = set()
+
+    # Dodaj losowe krawędzie
+    while len(edges) < 40:  # Dodajemy około 40 losowych krawędzi
+        u = random.choice(nodes)
+        v = random.choice(nodes)
+        if u != v:
+            edges.add((min(u, v), max(u, v)))
+
+    graph = {node: [] for node in nodes}
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
+    return graph
+
+# Funkcja do znajdowania komponentów spójnych
+def connected_components(graph):
+    visited = set()
+    components = []
+
+    def bfs(start):
+        queue = deque([start])
+        component = []
+        while queue:
+            node = queue.popleft()
+            if node not in visited:
+                visited.add(node)
+                component.append(node)
+                queue.extend(graph[node])
+        return component
+
+    for node in graph:
+        if node not in visited:
+            components.append(bfs(node))
+
+    return components
+
+# Funkcja do obliczania średniej długości najkrótszych ścieżek
+def average_shortest_path_length(graph, components):
+    total_length = 0
+    total_pairs = 0
+
+    for component in components:
+        if len(component) > 1:
+            distances = {node: float('inf') for node in component}
+
+            for start in component:
+                queue = deque([(start, 0)])
+                seen = set()
+
+                while queue:
+                    current, dist = queue.popleft()
+                    if current not in seen:
+                        seen.add(current)
+                        distances[current] = dist
+                        for neighbor in graph[current]:
+                            if neighbor not in seen:
+                                queue.append((neighbor, dist + 1))
+
+            total_length += sum(distances[node] for node in component if distances[node] < float('inf'))
+            total_pairs += len(component) * (len(component) - 1)
+
+    return total_length / total_pairs if total_pairs > 0 else 0
+
+# Główna logika
+def main():
+    graph = create_graph()
+
+    # Zapisz kopię grafu przed usunięciem krawędzi
+    original_graph = {node: neighbors[:] for node, neighbors in graph.items()}
+
+    # Krok 2: Usuń kilka losowych krawędzi (symulacja awarii)
+    all_edges = [(u, v) for u in graph for v in graph[u] if u < v]
+    removed_edges = random.sample(all_edges, 5)  # Usuń 5 losowych krawędzi
+    for u, v in removed_edges:
+        graph[u].remove(v)
+        graph[v].remove(u)
+
+    # Krok 3: Sprawdź komponenty spójne
+    components_before = connected_components(original_graph)
+    components_after = connected_components(graph)
+
+    # Krok 4: Oblicz średnią długość najkrótszej ścieżki przed i po usunięciu krawędzi
+    avg_length_before = average_shortest_path_length(original_graph, components_before)
+    avg_length_after = average_shortest_path_length(graph, components_after)
+
+    print("Czy graf jest spójny po awariach:", len(components_after) == 1)
+    print("Liczba komponentów spójnych:", len(components_after))
+    print("Średnia długość najkrótszej ścieżki przed awariami:", avg_length_before)
+    print("Średnia długość najkrótszej ścieżki po awariach:", avg_length_after)
+
+if __name__ == "__main__":
+    main()
+

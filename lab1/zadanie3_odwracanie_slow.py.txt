@@ -1,0 +1,16 @@
+'''
+Zadanie 3. Odwracanie słów
+Przykładowe dane: ["programowanie", "Python", "zadanie", "student", "klasa"]
+Napisz funkcję, która przyjmie listę 5 słów, a następnie zwróci nową listę, w której każde
+słowo będzie zapisane od tyłu.
+'''
+
+def odwroc_slowa(slowa):
+    return [slowo[::-1] for slowo in slowa]
+
+# Przykładowe dane
+slowa = ["programowanie", "Python", "zadanie", "student", "klasa"]
+
+# Wywołanie funkcji i wypisanie wyniku
+wynik = odwroc_slowa(slowa)
+print("Słowa odwrócone:", wynik)

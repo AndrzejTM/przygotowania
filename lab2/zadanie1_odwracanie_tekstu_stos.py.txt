@@ -1,0 +1,56 @@
+'''
+Zadanie 1
+    Zaimplementuj program, który odwraca podany tekst za pomocą stosu.
+    Program powinien działać w taki sposób, że każdy znak tekstu jest
+    dodawany na stos, a następnie wyjmowany ze stosu, aby utworzyć
+    odwrócony tekst.
+'''
+
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        """Dodaje element na stos."""
+        self.items.append(item)
+
+    def pop(self):
+        """Usuwa i zwraca element ze szczytu stosu."""
+        if self.is_empty():
+            raise IndexError("Stos jest pusty.")
+        return self.items.pop()
+
+    def is_empty(self):
+        """Sprawdza, czy stos jest pusty."""
+        return len(self.items) == 0
+
+    def peek(self):
+        """Zwraca element na szczycie stosu bez usuwania go."""
+        if self.is_empty():
+            raise IndexError("Stos jest pusty.")
+        return self.items[-1]
+
+    def size(self):
+        """Zwraca liczbę elementów na stosie."""
+        return len(self.items)
+
+def reverse_text(text):
+    """Odwraca podany tekst za pomocą stosu."""
+    stack = Stack()
+
+    # Dodawanie znaków na stos
+    for char in text:
+        stack.push(char)
+
+    # Wyjmowanie znaków ze stosu i tworzenie odwróconego tekstu
+    reversed_text = ''
+    while not stack.is_empty():
+        reversed_text += stack.pop()
+
+    return reversed_text
+
+# Przykładowe użycie
+if __name__ == "__main__":
+    input_text = "Hello, World!"
+    print("Oryginalny tekst:", input_text)
+    print("Odwrócony tekst:", reverse_text(input_text))

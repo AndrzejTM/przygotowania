@@ -1,0 +1,15 @@
+'''
+Zadanie 2. Filtrowanie liczb parzystych i ich kwadraty
+Napisz funkcję, która przyjmuje listę 15 liczb (użyj range do stworzenia tej listy), a następnie
+zwróci nową listę, która będzie zawierać kwadraty jedynie liczb parzystych.
+'''
+
+def kwadraty_parzystych(liczby):
+    return [x**2 for x in liczby if x % 2 == 0]
+
+# Przykładowa lista liczb
+liczby = list(range(1, 16))
+
+# Wywołanie funkcji i wypisanie wyniku
+wynik = kwadraty_parzystych(liczby)
+print("Kwadraty liczb parzystych:", wynik)

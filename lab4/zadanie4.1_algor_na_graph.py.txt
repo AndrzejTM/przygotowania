@@ -1,0 +1,336 @@
+'''
+from collections import deque
+import heapq
+
+graf = {
+	'A': ['B', 'C'],
+	'B': ['A', 'D', 'E'],
+	'C': ['A', 'F'],
+	'D': ['B'],
+	'E': ['B', 'F'],
+	'F': ['C', 'E']
+}
+
+# Algorytm BFS
+from collections import deque
+def przeszukiwanie_wszerz(graf, wezel_startowy):
+	odwiedzone = set()
+	kolejka = deque([wezel_startowy])
+	odwiedzone.add(wezel_startowy)
+	while kolejka:
+		wezel = kolejka.popleft()
+		print(wezel, end=" ")
+		for sasiad in graf.get(wezel, []):
+			if sasiad not in odwiedzone:
+				odwiedzone.add(sasiad)
+				kolejka.append(sasiad)
+
+# Algorytm DFS
+def przeszukiwanie_w_glab(graf, wezel_startowy, odwiedzone=None):
+	if odwiedzone is None:
+		odwiedzone = set()
+	odwiedzone.add(wezel_startowy)
+	print(wezel_startowy, end=" ")
+	for sasiad in graf.get(wezel_startowy, []):
+		if sasiad not in odwiedzone:
+			przeszukiwanie_w_glab(graf, sasiad, odwiedzone)
+
+# Algorytm Dijkstry
+graf_wazony = {
+	'A': {'B': 1, 'C': 4},
+	'B': {'A': 1, 'C': 2, 'D': 5},
+	'C': {'A': 4, 'B': 2, 'D': 1},
+	'D': {'B': 5, 'C': 1}
+}
+
+def dijkstra(graf, start):
+	odleglosci = {wezel: float('inf') for wezel in graf}
+	odleglosci[start] = 0
+	kolejka = [(0, start)]
+
+	while kolejka:
+		obecna_odleglosc, obecny_wezel = heapq.heappop(kolejka)
+		if obecna_odleglosc > odleglosci[obecny_wezel]:
+			continue
+		for sasiad, waga in graf[obecny_wezel].items():
+			odleglosc = obecna_odleglosc + waga
+			if odleglosc < odleglosci[sasiad]:
+				odleglosci[sasiad] = odleglosc
+				heapq.heappush(kolejka, (odleglosc, sasiad))
+	return odleglosci
+
+odleglosci = dijkstra(graf_wazony, 'A')
+print("Najkrótsze odległości od węzła 'A':", odleglosci)
+
+# Biblioteka NetworkX
+import networkx as nx
+
+# Tworzenie grafu
+Graf = nx.Graph()
+
+# Wyświetlanie wierzchołków
+Graf.nodes
+
+# Dodawanie wierzchołków
+Graf.add_node(1)
+
+# Dodawanie wierzchołków z kontenera iterowanego
+Graf.add_nodes_from(range(2, 5))
+Graf.add_nodes_from([(5, {"Miasto": "Krawkow"}), (6, {"Miasto": "Katowice"})])
+
+# Przenoszenie wierzchołków pomiędzy grafami
+Graf1 = nx.Graph()
+Graf1.add_nodes_from(range(7, 9))
+
+Graf.add_nodes_from(Graf1)
+
+# Wyświetl krawędzie
+Graf.edges
+
+# Dodawanie krawędzi
+Graf.add_edge(1, 2)
+Graf.edges
+
+# Dodawanie listy krawędzi
+Graf.add_edges_from([(2, 3), (1, 3)])
+Graf.edges
+
+# Importowanie krawędzi z innego grafu
+Graf1.add_edge(7,8)
+Graf.add_edges_from(Graf1.edges)
+Graf.edges
+
+# Operacje na grafach
+# Usuwanie wierzchołków
+Graf.remove_node(2)
+
+# Usuwanie listy wierzchołków
+Graf.remove_nodes_from([7,8])
+Graf.edges
+
+# Usuwanie krawędzi
+Graf.remove_edge(1,3)
+
+# Usuwanie listy krawędzi
+Graph.remove_edges_from()
+
+# Atrybuty elementów grafu
+Graf = nx.Graph(dzien = "Poniedziałek")
+Graf.graph
+
+Graf.graph["dzien"] = "Wtorek"
+Graf.graph
+
+# Dodanie węzła bezpośrednio do Graph.nodes
+Graf.add_node(1, godzina='5')
+Graf.add_nodes_from([3], godzina='2')
+Graf.nodes[1]
+
+Graf.nodes[1]['pokój'] = 714
+Graf.nodes.data()
+
+# Atrybuty krawędzi
+Graf.add_edge(1, 2, weight=4.7 )
+Graf.add_edges_from([(3, 4), (4, 5)], kolor='czerwony')
+Graf.add_edges_from([(1, 2, {'kolor': 'niebieski'}), (2, 3, {'weight': 8})])
+Graf[1][2]['weight'] = 4.7
+Graf.edges[3, 4]['weight'] = 4.2
+
+# Grafy skierowane
+DG = nx.DiGraph()
+DG.add_weighted_edges_from([(1, 2, 0.5), (3, 1, 0.75)])
+DG.out_degree(1, weight='weight')
+
+DG.degree(1, weight='weight')
+
+# Multigrafy
+transport_network = nx.MultiGraph()
+transport_network.add_node("MiastoA")
+transport_network.add_node("MiastoB")
+transport_network.add_edge("MiastoA", "MiastoB", transport="pociąg", czas=120)
+transport_network.add_edge("MiastoA", "MiastoB", transport="autobus", czas=180)
+transport_network.add_edge("MiastoA", "MiastoB", transport="samolot", czas=45)
+print("Połączenia między MiastoA i MiastoB w sieci transportowej:")
+for edge in transport_network.edges(data=True):
+	print(edge)
+
+Połączenia między MiastoA i MiastoB w sieci transportowej:
+('MiastoA', 'MiastoB', {'transport': 'pociąg', 'czas': 120})
+('MiastoA', 'MiastoB', {'transport': 'autobus', 'czas': 180})
+('MiastoA', 'MiastoB', {'transport': 'samolot', 'czas': 45})
+
+# Reprezentacja grafu, lista sąsiedztwa
+G = nx.Graph()
+G.add_edges_from([(1, 2), (1, 3), (2, 4)])
+# Wyświetlanie listy sąsiedztwa
+print("Lista sąsiedztwa:")
+for node, neighbors in G.adjacency():
+	print(f"{node}: {list(neighbors)}")
+
+# Macierz sąsiedztwa
+import numpy as np
+adj_matrix = nx.adjacency_matrix(G).todense()
+adj_matrix
+
+# Generatory grafów
+import matplotlib.pyplot as plt
+
+# Graf pełny
+G = nx.complete_graph(5)
+nx.draw(G, with_labels=True, node_color="skyblue", node_size=500, font_size=16)
+plt.show()
+
+# Graf cykliczny
+G = nx.cycle_graph(6)
+nx.draw(G, with_labels=True, node_color="lightgreen", node_size=500,␣↪font_size=16)
+plt.show()
+
+# Graf Erdos-Renyi
+G = nx.erdos_renyi_graph(10, 0.3)
+nx.draw(G, with_labels=True, node_color="salmon", node_size=500, font_size=16)
+plt.show()
+
+# Wyznaczenie najkrótszej trasy pomiędzy uczelniami w Katowicach
+import osmnx as ox
+import networkx as nx
+import matplotlib.pyplot as plt
+miasto = "Katowice, Polska"
+
+G = ox.graph_from_place(miasto, network_type='drive')
+wspolrzedne_uczelni = {
+	"Uniwersytet Ekonomiczny": (50.2599, 19.0242),
+	"Uniwersytet Śląski": (50.2612, 19.0247),
+	"Politechnika Śląska": (50.2655, 19.0179)
+}
+
+wezly_uczelni = {nazwa: ox.distance.nearest_nodes(G, wsp[1], wsp[0]) for nazwa,␣↪wsp in wspolrzedne_uczelni.items()}
+
+pary_polaczen = [("Uniwersytet Ekonomiczny", "Uniwersytet Śląski"),
+		("Uniwersytet Śląski", "Politechnika Śląska"),
+		("Politechnika Śląska", "Uniwersytet Ekonomiczny")]
+trasy = [nx.dijkstra_path(G, wezly_uczelni[start], wezly_uczelni[end],weight='length') for start, end in pary_polaczen]
+
+fig, ax = ox.plot_graph_routes(G, trasy, route_linewidth=3, node_size=0,bgcolor='white', route_color='blue')
+plt.show()
+	
+
+4.1 Zadanie 1
+• Stwórz graf z 10 węzłami
+• Dodaj losowe połączenia między osobami
+• Oblicz stopień każdego węzła (liczbę połączeń każdej osoby) i wypisz osoby z najwyższą i
+najniższą liczbą znajomych.
+
+''' import random
+import networkx as nx
+
+# Tworzenie grafu z 10 węzłami reprezentującymi osoby
+G = nx.Graph()
+nodes = [f"Person {i}" for i in range(1, 11)]
+G.add_nodes_from(nodes)
+
+# Dodawanie losowych połączeń (relacji) między osobami
+for _ in range(15):  # 15 losowych połączeń
+    person1, person2 = random.sample(nodes, 2)
+    G.add_edge(person1, person2)
+
+# Obliczanie stopnia każdego węzła (liczba znajomych)
+degrees = {node: G.degree(node) for node in G.nodes}
+
+# Znajdowanie osoby z największą i najmniejszą liczbą znajomych
+max_friends = max(degrees.values())
+min_friends = min(degrees.values())
+
+most_connected = [node for node, degree in degrees.items() if degree == max_friends]
+least_connected = [node for node, degree in degrees.items() if degree == min_friends]
+
+# Wyświetlanie wyników
+print("Stopień każdego węzła:")
+for person, degree in degrees.items():
+    print(f"{person}: {degree} znajomych")
+
+print("\nOsoby z największą liczbą znajomych:")
+for person in most_connected:
+    print(f"{person} ({max_friends} znajomych)")
+
+print("\nOsoby z najmniejszą liczbą znajomych:")
+for person in least_connected:
+    print(f"{person} ({min_friends} znajomych)")
+
+# Wersja from scratch
+
+class Graph:
+    def __init__(self):
+        """Inicjalizuje graf jako słownik list sąsiedztwa."""
+        self.adjacency_list = {}
+
+    def add_node(self, node):
+        """Dodaje węzeł do grafu, jeśli jeszcze nie istnieje."""
+        if node not in self.adjacency_list:
+            self.adjacency_list[node] = []
+
+    def add_edge(self, node1, node2):
+        """Dodaje krawędź między dwoma węzłami."""
+        if node1 not in self.adjacency_list:
+            self.add_node(node1)
+        if node2 not in self.adjacency_list:
+            self.add_node(node2)
+
+        if node2 not in self.adjacency_list[node1]:
+            self.adjacency_list[node1].append(node2)
+        if node1 not in self.adjacency_list[node2]:
+            self.adjacency_list[node2].append(node1)
+
+    def display(self):
+        """Wyświetla graf jako listę sąsiedztwa."""
+        for node, neighbors in self.adjacency_list.items():
+            print(f"{node}: {', '.join(neighbors)}")
+
+    def calculate_degrees(self):
+        """Oblicza stopień każdego węzła."""
+        return {node: len(neighbors) for node, neighbors in self.adjacency_list.items()}
+
+# Tworzenie grafu
+if __name__ == "__main__":
+    graph = Graph()
+
+    # Dodawanie węzłów i losowych krawędzi
+    nodes = [f"Person {i}" for i in range(1, 11)]
+    for node in nodes:
+        graph.add_node(node)
+
+    import random
+    for _ in range(15):  # Dodanie 15 losowych połączeń
+        node1, node2 = random.sample(nodes, 2)
+        graph.add_edge(node1, node2)
+
+    # Wyświetlanie grafu
+    print("Graf (lista sąsiedztwa):")
+    graph.display()
+
+    # Obliczanie stopni węzłów
+    degrees = graph.calculate_degrees()
+
+    # Znajdowanie osoby z największą i najmniejszą liczbą znajomych
+    max_degree = max(degrees.values())
+    min_degree = min(degrees.values())
+
+    most_connected = [node for node, degree in degrees.items() if degree == max_degree]
+    least_connected = [node for node, degree in degrees.items() if degree == min_degree]
+
+    # Wyświetlanie wyników
+    print("\nStopień każdego węzła:")
+    for node, degree in degrees.items():
+        print(f"{node}: {degree} znajomych")
+
+    print("\nOsoby z największą liczbą znajomych:")
+    for node in most_connected:
+        print(f"{node} ({max_degree} znajomych)")
+
+    print("\nOsoby z najmniejszą liczbą znajomych:")
+    for node in least_connected:
+        print(f"{node} ({min_degree} znajomych)")
+
+
+
+
+

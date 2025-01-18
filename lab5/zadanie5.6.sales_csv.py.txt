@@ -1,0 +1,45 @@
+'''
+Zadanie 6: Analiza sprzeda¿y z pliku CSV 
+1. Wczytaj dane z pliku sales.csv, gdzie ka¿da linia zawiera: Produkt, Iloœæ, Cena. 
+2. Oblicz ³¹czn¹ sprzeda¿ dla ka¿dego produktu (Iloœæ × Cena) i wypisz wyniki w formacie:
+ Produkt A: 300.0 Produkt B: 50.0 Produkt C: 1000.0
+3. Zapisz wyniki w nowym pliku sales_summary.csv.
+Rozszerzenie ZnajdŸ produkt o najwy¿szej sprzeda¿y i zapisz jego nazwê w pliku top_selling_product.txt. 
+Uwaga 
+• Pliki wymagane do realizacji zadañ znajduj¹ siê w archiwum student_tasks.zip 
+• Ka¿de zadanie mo¿na rozwi¹zywaæ niezale¿nie. 
+• Rozszerzenia s¹ opcjonalne i przeznaczone dla tych, którzy ukoñczyli podstawowe wersje zadañ.
+'''
+import pandas as pd
+
+# Krok 1: Wczytaj dane z pliku sales.csv
+file_path = '/mnt/data/sales.csv'  # Œcie¿ka do pliku z danymi sprzeda¿y
+sales_df = pd.read_csv(file_path, header=None, names=["Produkt", "Iloœæ", "Cena"])  # Wczytanie danych z nag³ówkami
+
+# Krok 2: Oblicz ³¹czn¹ sprzeda¿ dla ka¿dego produktu
+sales_df['Total_Sales'] = sales_df['Iloœæ'] * sales_df['Cena']  # Obliczenie sprzeda¿y (Iloœæ × Cena)
+sales_summary = sales_df.groupby('Produkt')['Total_Sales'].sum()  # Sumowanie sprzeda¿y dla ka¿dego produktu
+
+# Krok 3: Zapisz wyniki w nowym pliku sales_summary.csv
+summary_file_path = '/mnt/data/sales_summary.csv'  # Œcie¿ka do nowego pliku CSV
+sales_summary.to_csv(summary_file_path, header=["Total_Sales"])  # Zapis wyników do pliku
+
+# Krok 4: ZnajdŸ produkt o najwy¿szej sprzeda¿y
+def znajdz_top_selling(sales):
+    max_sprzedaz = sales.max()  # ZnajdŸ najwy¿sz¹ wartoœæ sprzeda¿y
+    for produkt, sprzedaz in sales.items():
+        if sprzedaz == max_sprzedaz:
+            return produkt
+
+top_selling_product = znajdz_top_selling(sales_summary)  # ZnajdŸ nazwê produktu
+
+# Krok 5: Zapisz nazwê najlepiej sprzedaj¹cego siê produktu do pliku
+top_selling_product_file_path = '/mnt/data/top_selling_product.txt'  # Œcie¿ka do pliku tekstowego
+with open(top_selling_product_file_path, 'w') as file:
+    file.write(top_selling_product)  # Zapis nazwy produktu
+
+# Informacja o zakoñczeniu
+print("Wyniki zosta³y zapisane w pliku sales_summary.csv.")
+print("Nazwa najlepiej sprzedaj¹cego siê produktu zapisana w pliku top_selling_product.txt.")
+
+

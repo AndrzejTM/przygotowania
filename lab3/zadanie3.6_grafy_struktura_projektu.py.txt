@@ -1,0 +1,58 @@
+'''
+1. Graf reprezentujący strukturę projektu
+
+Stwórz graf reprezentujący strukturę dowolnego projektu programistycznego,
+na przykład projektu, nad którym obecnie pracujesz, lub struktury tego repozytorium.
+    - węzły - plik i katalog w projekcie
+    - krawędzie - połączenia między węzłami reprezentują importy
+
+'''
+
+class Graph:
+    def __init__(self):
+        """Inicjalizuje pusty graf."""
+        self.nodes = {}
+
+    def add_node(self, node):
+        """Dodaje węzeł do grafu."""
+        if node not in self.nodes:
+            self.nodes[node] = []
+
+    def add_edge(self, from_node, to_node):
+        """Dodaje krawędź między węzłami."""
+        if from_node not in self.nodes:
+            self.add_node(from_node)
+        if to_node not in self.nodes:
+            self.add_node(to_node)
+        self.nodes[from_node].append(to_node)
+
+    def display(self):
+        """Wyświetla graf jako listę sąsiedztwa."""
+        for node, edges in self.nodes.items():
+            print(f"{node}: {', '.join(edges)}")
+
+    def visualize(self):
+        """Wizualizuje graf za pomocą ASCII-art."""
+        print("Graf struktury projektu:")
+        for node, edges in self.nodes.items():
+            print(f"{node} -> {', '.join(edges) if edges else 'Brak połączeń'}")
+
+# Tworzenie grafu projektu
+if __name__ == "__main__":
+    project_graph = Graph()
+
+    # Dodanie węzłów i krawędzi
+    project_graph.add_node("root")
+    project_graph.add_edge("root", "module1.py")
+    project_graph.add_edge("root", "module2.py")
+    project_graph.add_edge("root", "subdir")
+    project_graph.add_edge("subdir", "utils.py")
+    project_graph.add_edge("root", "tests")
+    project_graph.add_edge("tests", "test_module1.py")
+    project_graph.add_edge("test_module1.py", "module1.py")
+    project_graph.add_edge("module1.py", "utils.py")
+
+    # Wyświetlenie i wizualizacja
+    project_graph.display()
+    project_graph.visualize()
+

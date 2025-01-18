@@ -1,0 +1,39 @@
+'''
+Zadanie 4: 
+Analiza danych studentów w CSV 
+1. Wczytaj dane z pliku students.csv. 
+2. Oblicz œredni¹ ocen wszystkich studentów i wypisz j¹ na ekranie. 
+3. Stwórz nowy plik CSV students_summary.csv, w którym dodasz kolumnê Status: 
+– Jeœli œrednia ocena studenta jest wiêksza lub równa 3.0, ustaw Status na Zaliczony. 
+– W przeciwnym razie ustaw Status na Nie zaliczony. 
+Rozszerzenie Posortuj dane w nowym pliku CSV alfabetycznie wed³ug imion studentów. 
+'''
+
+import pandas as pd
+
+# Krok 1: Wczytaj dane z pliku CSV
+file_path = '/mnt/data/students.csv'  # Œcie¿ka do pliku z danymi studentów
+students_df = pd.read_csv(file_path)  # Wczytanie pliku CSV do tabeli
+
+# Krok 2: Oblicz œredni¹ ocen
+average_grade = students_df['Srednia_ocen'].mean()  # Œrednia ocen ze wszystkich wpisów
+
+# Krok 3: Dodaj kolumnê "Status"
+def determine_status(grade):
+    if grade >= 3.0:
+        return 'Zaliczony'
+    else:
+        return 'Nie zaliczony'
+
+students_df['Status'] = students_df['Srednia_ocen'].apply(determine_status)  # Dodanie kolumny z wynikami
+
+# Krok 4: Posortuj dane wed³ug imion studentów
+students_df_sorted = students_df.sort_values(by='Imie')  # Sortowanie alfabetyczne
+
+# Krok 5: Zapisz przetworzone dane do nowego pliku
+summary_file_path = '/mnt/data/students_summary.csv'  # Œcie¿ka do nowego pliku
+students_df_sorted.to_csv(summary_file_path, index=False)  # Zapis tabeli do pliku CSV
+
+# Krok 6: Wyœwietl œredni¹ ocen
+print(f"Œrednia ocen wszystkich studentów: {average_grade:.2f}")  # Wyœwietlenie wyniku
+print("Nowy plik CSV zapisany w:", summary_file_path)

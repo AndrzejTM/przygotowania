@@ -1,0 +1,56 @@
+'''
+    Zadanie 2
+    Zaimplementuj program, który symuluje kolejkę w sklepie. Klienci
+    są dodawani do kolejki, a następnie obsługiwani w kolejności
+    przybycia (FIFO). Po obsłużeniu klient jest usuwany z kolejki.
+'''
+
+class Queue:
+    def __init__(self):
+        self.items = []
+
+    def enqueue(self, item):
+        """Dodaje element na koniec kolejki."""
+        self.items.append(item)
+
+    def dequeue(self):
+        """Usuwa i zwraca element z początku kolejki."""
+        if self.is_empty():
+            raise IndexError("Kolejka jest pusta.")
+        return self.items.pop(0)
+
+    def is_empty(self):
+        """Sprawdza, czy kolejka jest pusta."""
+        return len(self.items) == 0
+
+    def peek(self):
+        """Zwraca element na początku kolejki bez jego usuwania."""
+        if self.is_empty():
+            raise IndexError("Kolejka jest pusta.")
+        return self.items[0]
+
+    def size(self):
+        """Zwraca liczbę elementów w kolejce."""
+        return len(self.items)
+
+def simulate_queue():
+    """Symuluje kolejkę w sklepie."""
+    queue = Queue()
+
+    # Dodawanie klientów do kolejki
+    queue.enqueue("Klient 1")
+    queue.enqueue("Klient 2")
+    queue.enqueue("Klient 3")
+    queue.enqueue("Klient 4")
+
+    print("Stan kolejki po dodaniu klientów:", queue.items)
+
+    # Obsługa klientów
+    while not queue.is_empty():
+        current_customer = queue.dequeue()
+        print(f"Obsługiwany: {current_customer}")
+        print("Stan kolejki:", queue.items)
+
+# Przykładowe użycie
+if __name__ == "__main__":
+    simulate_queue()

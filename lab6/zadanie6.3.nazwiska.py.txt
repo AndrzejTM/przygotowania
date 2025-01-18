@@ -1,0 +1,54 @@
+'''
+Napisz program, który pozwala wyszukaæ nazwisko w tej liœcie za pomoc¹ wyszukiwania binarnego. 
+Dla porównania, zaimplementuj wyszukiwanie liniowe i zmierz czas dzia³ania obu algorytmów. 
+Nazwiska nale¿y zaimportowaæ z pliku nazwiska_posortowane.txt i zapisaæ je do listy.
+
+import time
+def zmierz_czas_sortowania(func, lista):
+    	start = time.time()    
+	func()    
+	koniec = time.time()    
+	return koniec - start
+'''
+
+import time
+
+# Wczytanie nazwisk z pliku
+with open('/mnt/data/nazwiska_posortowane.txt', 'r', encoding='utf-8') as file:
+    nazwiska = [line.strip() for line in file]
+
+# Funkcja wyszukiwania liniowego
+def wyszukiwanie_liniowe(lista, nazwisko):
+    for item in lista:
+        if item == nazwisko:
+            return True
+    return False
+
+# Funkcja wyszukiwania binarnego
+def wyszukiwanie_binarne(lista, nazwisko):
+    left, right = 0, len(lista) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if lista[mid] == nazwisko:
+            return True
+        elif lista[mid] < nazwisko:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return False
+
+# Funkcja mierz¹ca czas dzia³ania
+def zmierz_czas_wyszukiwania(func, lista, nazwisko):
+    start = time.time()
+    result = func(lista, nazwisko)
+    koniec = time.time()
+    return koniec - start, result
+
+# Testowanie i porównywanie czasu wyszukiwania
+szukane_nazwisko = "Kowalski"
+
+czas_liniowe, wynik_liniowe = zmierz_czas_wyszukiwania(wyszukiwanie_liniowe, nazwiska, szukane_nazwisko)
+czas_binarne, wynik_binarne = zmierz_czas_wyszukiwania(wyszukiwanie_binarne, nazwiska, szukane_nazwisko)
+
+print(f"Wynik wyszukiwania liniowego: {wynik_liniowe}, czas: {czas_liniowe:.6f} sekund")
+print(f"Wynik wyszukiwania binarnego: {wynik_binarne}, czas: {czas_binarne:.6f} sekund")

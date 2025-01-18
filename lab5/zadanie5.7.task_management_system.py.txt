@@ -1,0 +1,283 @@
+'''
+System zarz¹dzania zadaniami z kolejk¹ priorytetow¹ i logowaniem 
+Opis problemu: Program ma zarz¹dzaæ kolejk¹ zadañ z ró¿nymi priorytetami. 
+Jego funkcjonalnoœæ obejmuje dodawanie zadañ, przetwarzanie ich w kolejnoœci priorytetów, 
+usuwanie zadañ na podstawie nazwy, a tak¿e zapisywanie i odczytywanie stanu kolejki za pomoc¹ mechanizmu 
+serializacji (pickle). 
+Wszystkie akcje powinny byæ logowane w pliku system_logs.txt.
+Wymagania: 
+1. Klasa Zadanie: 
+– Powinna zawieraæ atrybuty: 
+• nazwa - nazwa zadania, np. "Naprawa serwera". 
+• priorytet - liczba ca³kowita oznaczaj¹ca priorytet (ni¿sza liczba oznacza wy¿szy priorytet). 
+• czas_dodania - czas utworzenia zadania, przypisywany automatycznie przy tworzeniu obiektu. 
+– Powinna umo¿liwiaæ porównywanie obiektów na podstawie priorytetu, 
+a w przypadku równoœci na podstawie czasu dodania (__lt__). 
+– Reprezentacja tekstowa zadania powinna mieæ format:
+ Zadanie: Naprawa serwera, Priorytet: 
+1, Dodano: 2024-11-11 12:00:00 
+2. Klasa SystemZadan: 
+– Powinna zarz¹dzaæ kolejk¹ zadañ za pomoc¹ heapq. 
+– Powinna oferowaæ nastêpuj¹ce funkcjonalnoœci: 
+• Dodanie zadania z priorytetem. 
+• Przetwarzanie zadania o najwy¿szym priorytecie.
+• Usuwanie zadania na podstawie jego nazwy. 
+• Wyœwietlanie aktualnego stanu kolejki. 
+• Zapis i odczyt stanu kolejki przy u¿yciu pickle. 
+– Wszystkie akcje powinny byæ rejestrowane w logach. 
+3. Logowanie: – Plik system_logs.txt powinien rejestrowaæ ka¿d¹ akcjê w formacie:
+ [2024-11-11 12:00:00] INFO 
+Dodano zadanie: Naprawa serwera, Priorytet: 1 [2024-11-11 12:05:00] 
+INFO Przetworzono zadanie: Naprawa serwera [2024-11-11 12:10:00] 
+INFO Zapisano stan kolejki [2024-11-11 12:15:00] 
+WARNING Próba usuniêcia zadania, które nie istnieje: 
+Zadanie A Zakres do realizacji: 
+1. Utworzenie klasy Zadanie z odpowiednimi atrybutami i metodami, umo¿liwiaj¹cej porównywanie i reprezentowanie obiektów. 
+2. Implementacja klasy SystemZadan, obs³uguj¹cej kolejkê priorytetow¹, z metodami do zarz¹dzania zadaniami 
+oraz zapisu i odczytu kolejki z pliku. 
+3. Dodanie logowania dzia³añ programu do pliku system_logs.txt. 
+4. Przetestowanie funkcji programu na przyk³adach, takich jak dodawanie, przetwarzanie i usuwanie zadañ oraz 
+zapis i odczyt stanu kolejki. 
+Dodatkowe wymagania (++opcjonalne): 
+1. Ograniczenie liczby zadañ w kolejce do 10. 
+Przy dodaniu nowego zadania w pe³nej kolejce powinno byæ automatycznie usuniête zadanie o najni¿szym priorytecie. 
+Dzia³anie to powinno byæ zarejestrowane w logach. 
+2. Dodanie funkcji umo¿liwiaj¹cej analizê logów, np. wyœwietlenie wszystkich ostrze¿eñ 
+(WARNING) lub informacji (INFO). 
+3. Stworzenie prostego interfejsu tekstowego pozwalaj¹cego na interakcjê z u¿ytkownikiem, 
+z opcjami takimi jak: dodanie zadania, przetworzenie zadania, wyœwietlenie kolejki czy zapis stanu.
+'''
+
+import heapq
+import pickle
+import logging
+from datetime import datetime
+
+# Konfiguracja logowania
+logging.basicConfig(
+    filename="system_logs.txt",
+    level=logging.INFO,
+    format="[%(asctime)s] %(levelname)s %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+# Klasa Zadanie
+class Zadanie:
+    def __init__(self, nazwa, priorytet):
+        self.nazwa = nazwa  # Nazwa zadania
+        self.priorytet = priorytet  # Priorytet zadania (ni¿sza liczba = wy¿szy priorytet)
+        self.czas_dodania = datetime.now()  # Automatyczne przypisanie czasu dodania
+
+    # Porównywanie zadañ na podstawie priorytetu i czasu dodania
+    def __lt__(self, other):
+        if self.priorytet == other.priorytet:
+            return self.czas_dodania < other.czas_dodania
+        return self.priorytet < other.priorytet
+
+    # Reprezentacja tekstowa zadania
+    def __repr__(self):
+        return f"Zadanie: {self.nazwa}, Priorytet: {self.priorytet}, Dodano: {self.czas_dodania.strftime('%Y-%m-%d %H:%M:%S')}"
+
+# Klasa SystemZadan
+class SystemZadan:
+    def __init__(self, max_size=10):
+        self.kolejka = []  # Inicjalizacja pustej kolejki
+        self.max_size = max_size  # Maksymalna liczba zadañ w kolejce
+
+    # Dodawanie nowego zadania do kolejki
+    def dodaj_zadanie(self, nazwa, priorytet):
+        nowe_zadanie = Zadanie(nazwa, priorytet)
+        if len(self.kolejka) >= self.max_size:  # Sprawdzenie, czy kolejka jest pe³na
+            usuniete = heapq.heappop(self.kolejka)  # Usuniêcie zadania o najni¿szym priorytecie
+            logging.info(f"Usuniêto zadanie o najni¿szym priorytecie: {usuniete}")
+        heapq.heappush(self.kolejka, nowe_zadanie)  # Dodanie nowego zadania
+        logging.info(f"Dodano zadanie: {nowe_zadanie}")
+
+    # Przetwarzanie zadania o najwy¿szym priorytecie
+    def przetworz_zadanie(self):
+        if not self.kolejka:  # Sprawdzenie, czy kolejka jest pusta
+            logging.warning("Próba przetworzenia zadania w pustej kolejce")
+            return None
+        zadanie = heapq.heappop(self.kolejka)  # Usuniêcie zadania o najwy¿szym priorytecie
+        logging.info(f"Przetworzono zadanie: {zadanie}")
+        return zadanie
+
+    # Usuwanie zadania na podstawie nazwy
+    def usun_zadanie(self, nazwa):
+        for i, zadanie in enumerate(self.kolejka):
+            if zadanie.nazwa == nazwa:  # Znalezienie zadania po nazwie
+                del self.kolejka[i]  # Usuniêcie zadania z kolejki
+                heapq.heapify(self.kolejka)  # Przywrócenie porz¹dku w kolejce
+                logging.info(f"Usuniêto zadanie: {zadanie}")
+                return
+        logging.warning(f"Próba usuniêcia zadania, które nie istnieje: {nazwa}")
+
+    # Wyœwietlenie aktualnego stanu kolejki
+    def wyswietl_kolejke(self):
+        print("Aktualna kolejka zadañ:")
+        for zadanie in sorted(self.kolejka):  # Sortowanie zadañ w kolejce
+            print(zadanie)
+
+    # Zapis stanu kolejki do pliku
+    def zapisz_kolejke(self, plik):
+        with open(plik, 'wb') as f:
+            pickle.dump(self.kolejka, f)  # Zapis kolejki do pliku
+        logging.info("Zapisano stan kolejki")
+
+    # Odczyt stanu kolejki z pliku
+    def odczytaj_kolejke(self, plik):
+        with open(plik, 'rb') as f:
+            self.kolejka = pickle.load(f)  # Odczyt kolejki z pliku
+        logging.info("Odczytano stan kolejki")
+
+# Testowanie systemu
+if __name__ == "__main__":
+    system = SystemZadan()  # Utworzenie systemu zadañ
+
+    # Dodawanie zadañ
+    system.dodaj_zadanie("Naprawa serwera", 1)
+    system.dodaj_zadanie("Aktualizacja oprogramowania", 2)
+    system.dodaj_zadanie("Przygotowanie raportu", 3)
+
+    # Wyœwietlenie kolejki
+    system.wyswietl_kolejke()
+
+    # Przetworzenie zadania
+    system.przetworz_zadanie()
+
+    # Usuniêcie zadania
+    system.usun_zadanie("Aktualizacja oprogramowania")
+
+    # Zapis i odczyt stanu kolejki
+    system.zapisz_kolejke("kolejka.pkl")
+    system.odczytaj_kolejke("kolejka.pkl")
+
+    # Wyœwietlenie kolejki po odczycie
+    system.wyswietl_kolejke()
+
+
+'''
+Wersja z opcjalnymi wymaganiami
+
+import heapq
+import pickle
+import logging
+from datetime import datetime
+
+# Konfiguracja logowania
+logging.basicConfig(
+    filename="system_logs.txt",
+    level=logging.INFO,
+    format="[%(asctime)s] %(levelname)s %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+# Klasa Zadanie
+class Zadanie:
+    def __init__(self, nazwa, priorytet):
+        self.nazwa = nazwa  # Nazwa zadania
+        self.priorytet = priorytet  # Priorytet zadania (ni¿sza liczba = wy¿szy priorytet)
+        self.czas_dodania = datetime.now()  # Automatyczne przypisanie czasu dodania
+
+    # Porównywanie zadañ na podstawie priorytetu i czasu dodania
+    def __lt__(self, other):
+        if self.priorytet == other.priorytet:
+            return self.czas_dodania < other.czas_dodania
+        return self.priorytet < other.priorytet
+
+    # Reprezentacja tekstowa zadania
+    def __repr__(self):
+        return f"Zadanie: {self.nazwa}, Priorytet: {self.priorytet}, Dodano: {self.czas_dodania.strftime('%Y-%m-%d %H:%M:%S')}"
+
+# Klasa SystemZadan
+class SystemZadan:
+    def __init__(self, max_size=10):
+        self.kolejka = []  # Inicjalizacja pustej kolejki
+        self.max_size = max_size  # Maksymalna liczba zadañ w kolejce
+
+    # Dodawanie nowego zadania do kolejki
+    def dodaj_zadanie(self, nazwa, priorytet):
+        nowe_zadanie = Zadanie(nazwa, priorytet)
+        if len(self.kolejka) >= self.max_size:  # Sprawdzenie, czy kolejka jest pe³na
+            usuniete = heapq.heappop(self.kolejka)  # Usuniêcie zadania o najni¿szym priorytecie
+            logging.info(f"Usuniêto zadanie o najni¿szym priorytecie: {usuniete}")
+        heapq.heappush(self.kolejka, nowe_zadanie)  # Dodanie nowego zadania
+        logging.info(f"Dodano zadanie: {nowe_zadanie}")
+
+    # Przetwarzanie zadania o najwy¿szym priorytecie
+    def przetworz_zadanie(self):
+        if not self.kolejka:  # Sprawdzenie, czy kolejka jest pusta
+            logging.warning("Próba przetworzenia zadania w pustej kolejce")
+            return None
+        zadanie = heapq.heappop(self.kolejka)  # Usuniêcie zadania o najwy¿szym priorytecie
+        logging.info(f"Przetworzono zadanie: {zadanie}")
+        return zadanie
+
+    # Usuwanie zadania na podstawie nazwy
+    def usun_zadanie(self, nazwa):
+        for i, zadanie in enumerate(self.kolejka):
+            if zadanie.nazwa == nazwa:  # Znalezienie zadania po nazwie
+                del self.kolejka[i]  # Usuniêcie zadania z kolejki
+                heapq.heapify(self.kolejka)  # Przywrócenie porz¹dku w kolejce
+                logging.info(f"Usuniêto zadanie: {zadanie}")
+                return
+        logging.warning(f"Próba usuniêcia zadania, które nie istnieje: {nazwa}")
+
+    # Wyœwietlenie aktualnego stanu kolejki
+    def wyswietl_kolejke(self):
+        print("Aktualna kolejka zadañ:")
+        for zadanie in sorted(self.kolejka):  # Sortowanie zadañ w kolejce
+            print(zadanie)
+
+    # Zapis stanu kolejki do pliku
+    def zapisz_kolejke(self, plik):
+        with open(plik, 'wb') as f:
+            pickle.dump(self.kolejka, f)  # Zapis kolejki do pliku
+        logging.info("Zapisano stan kolejki")
+
+    # Odczyt stanu kolejki z pliku
+    def odczytaj_kolejke(self, plik):
+        with open(plik, 'rb') as f:
+            self.kolejka = pickle.load(f)  # Odczyt kolejki z pliku
+        logging.info("Odczytano stan kolejki")
+
+    # Analiza logów
+    def analiza_logow(self, typ):
+        with open("system_logs.txt", 'r') as log_file:
+            for linia in log_file:
+                if f"{typ}" in linia:
+                    print(linia.strip())
+
+# Testowanie systemu
+if __name__ == "__main__":
+    system = SystemZadan()  # Utworzenie systemu zadañ
+
+    # Dodawanie zadañ
+    system.dodaj_zadanie("Naprawa serwera", 1)
+    system.dodaj_zadanie("Aktualizacja oprogramowania", 2)
+    system.dodaj_zadanie("Przygotowanie raportu", 3)
+
+    # Wyœwietlenie kolejki
+    system.wyswietl_kolejke()
+
+    # Przetworzenie zadania
+    system.przetworz_zadanie()
+
+    # Usuniêcie zadania
+    system.usun_zadanie("Aktualizacja oprogramowania")
+
+    # Zapis i odczyt stanu kolejki
+    system.zapisz_kolejke("kolejka.pkl")
+    system.odczytaj_kolejke("kolejka.pkl")
+
+    # Wyœwietlenie kolejki po odczycie
+    system.wyswietl_kolejke()
+
+    # Analiza logów
+    print("Analiza logów - INFO:")
+    system.analiza_logow("INFO")
+
+    print("Analiza logów - WARNING:")
+    system.analiza_logow("WARNING")
+
+

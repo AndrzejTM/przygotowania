@@ -1,0 +1,63 @@
+'''
+Zadanie 1. Klasa Kot dziedzicząca po klasie Zwierze
+Napisz klasę Kot, która dziedziczy po klasie Zwierze. Klasa Kot powinna mieć dodatkową
+właściwość ulubione_jedzenie (z getterem i setterem). Dodaj metodę przedstaw_sie(),
+która zwróci imię kota oraz informację o jego ulubionym jedzeniu. Stwórz obiekt tej klasy i
+wywołaj metodę przedstaw_sie() .
+
+
+class Zwierze:
+	def __init__(self, imie):
+		self._imie = imie
+	@property
+	def imie(self):
+		return self._imie
+	@imie.setter
+	def imie(self, wartosc):
+		if not wartosc:
+			raise ValueError("Imię nie może być puste")
+	self._imie = wartosc
+	def przedstaw_sie(self):
+		return f"Jestem {self._imie}"
+'''
+
+class Zwierze:
+    def __init__(self, imie):
+        self._imie = imie
+
+    @property
+    def imie(self):
+        return self._imie
+
+    @imie.setter
+    def imie(self, wartosc):
+        if not wartosc:
+            raise ValueError("Imię nie może być puste")
+        self._imie = wartosc
+
+    def przedstaw_sie(self):
+        return f"Jestem {self._imie}"
+
+class Kot(Zwierze):
+    def __init__(self, imie, ulubione_jedzenie):
+        super().__init__(imie)
+        self._ulubione_jedzenie = ulubione_jedzenie
+
+    @property
+    def ulubione_jedzenie(self):
+        return self._ulubione_jedzenie
+
+    @ulubione_jedzenie.setter
+    def ulubione_jedzenie(self, wartosc):
+        if not wartosc:
+            raise ValueError("Ulubione jedzenie nie może być puste")
+        self._ulubione_jedzenie = wartosc
+
+    def przedstaw_sie(self):
+        return f"Jestem {self.imie} i moje ulubione jedzenie to {self.ulubione_jedzenie}."
+
+# Tworzenie obiektu klasy Kot
+kot = Kot("Mruczek", "ryba")
+
+# Wywołanie metody przedstaw_sie
+print(kot.przedstaw_sie())

@@ -1,0 +1,2 @@
+- MySQL server: https://dev.mysql.com/downloads/mysql/5.5.html?os=3&version=5
+- MySQL Workbench: https://dev.mysql.com/downloads/workbench/

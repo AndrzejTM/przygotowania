@@ -1,0 +1,145 @@
+'''
+4.2 Zadanie 2
+• Stwórz graf z 8-10 węzłami, gdzie węzły to miasta, a krawędzie to drogi między nimi.
+• Dodaj do każdej krawędzi wagę reprezentującą dystans między miastami.
+• Znajdź najkrótszą ścieżkę pod względem odległości między dwoma wybranymi miastami, np.
+miasto_A i miasto_B.
+'''
+# Wersja networkx
+import networkx as nx
+
+def create_graph():
+    # Tworzenie grafu
+    graph = nx.Graph()
+
+    # Dodawanie węzłów (miasta)
+    cities = ["Miasto_A", "Miasto_B", "Miasto_C", "Miasto_D", "Miasto_E", 
+              "Miasto_F", "Miasto_G", "Miasto_H"]
+    graph.add_nodes_from(cities)
+
+    # Dodawanie krawędzi (drogi z wagami reprezentującymi dystanse)
+    edges = [
+        ("Miasto_A", "Miasto_B", 10),
+        ("Miasto_A", "Miasto_C", 15),
+        ("Miasto_B", "Miasto_D", 12),
+        ("Miasto_B", "Miasto_E", 15),
+        ("Miasto_C", "Miasto_F", 10),
+        ("Miasto_D", "Miasto_E", 1),
+        ("Miasto_D", "Miasto_G", 2),
+        ("Miasto_E", "Miasto_H", 5),
+        ("Miasto_F", "Miasto_H", 8),
+        ("Miasto_G", "Miasto_H", 3)
+    ]
+
+    graph.add_weighted_edges_from(edges)
+    return graph
+
+def find_shortest_path(graph, start, end):
+    # Znalezienie najkrótszej ścieżki za pomocą algorytmu Dijkstry
+    path = nx.dijkstra_path(graph, source=start, target=end, weight='weight')
+    distance = nx.dijkstra_path_length(graph, source=start, target=end, weight='weight')
+    return path, distance
+
+if __name__ == "__main__":
+    # Tworzenie grafu
+    graph = create_graph()
+
+    # Definiowanie punktu początkowego i końcowego
+    start_city = "Miasto_A"
+    end_city = "Miasto_H"
+
+    # Znalezienie najkrótszej ścieżki
+    shortest_path, total_distance = find_shortest_path(graph, start_city, end_city)
+
+    # Wyświetlenie wyników
+    print(f"Najkrótsza ścieżka z {start_city} do {end_city}: {shortest_path}")
+    print(f"Całkowita odległość: {total_distance} km")
+
+# Wersja from scratch
+class Graph:
+    def __init__(self):
+        self.nodes = set()
+        self.edges = {}
+
+    def add_node(self, node):
+        self.nodes.add(node)
+        if node not in self.edges:
+            self.edges[node] = []
+
+    def add_edge(self, node1, node2, weight):
+        self.edges[node1].append((node2, weight))
+        self.edges[node2].append((node1, weight))
+
+    def dijkstra(self, start, end):
+        shortest_paths = {node: (float('inf'), None) for node in self.nodes}
+        shortest_paths[start] = (0, None)
+        visited = set()
+
+        while visited != self.nodes:
+            current_node = None
+            for node in self.nodes:
+                if node not in visited:
+                    if current_node is None:
+                        current_node = node
+                    elif shortest_paths[node][0] < shortest_paths[current_node][0]:
+                        current_node = node
+
+            if shortest_paths[current_node][0] == float('inf'):
+                break
+
+            visited.add(current_node)
+            current_distance = shortest_paths[current_node][0]
+
+            for neighbor, weight in self.edges[current_node]:
+                distance = current_distance + weight
+                if distance < shortest_paths[neighbor][0]:
+                    shortest_paths[neighbor] = (distance, current_node)
+
+        path = []
+        node = end
+        while node is not None:
+            path.append(node)
+            node = shortest_paths[node][1]
+        path.reverse()
+
+        return path, shortest_paths[end][0]
+
+if __name__ == "__main__":
+    # Tworzenie grafu
+    graph = Graph()
+
+    # Dodawanie węzłów (miasta)
+    cities = ["Miasto_A", "Miasto_B", "Miasto_C", "Miasto_D", "Miasto_E", 
+              "Miasto_F", "Miasto_G", "Miasto_H"]
+    for city in cities:
+        graph.add_node(city)
+
+    # Dodawanie krawędzi (drogi z wagami reprezentującymi dystanse)
+    edges = [
+        ("Miasto_A", "Miasto_B", 10),
+        ("Miasto_A", "Miasto_C", 15),
+        ("Miasto_B", "Miasto_D", 12),
+        ("Miasto_B", "Miasto_E", 15),
+        ("Miasto_C", "Miasto_F", 10),
+        ("Miasto_D", "Miasto_E", 1),
+        ("Miasto_D", "Miasto_G", 2),
+        ("Miasto_E", "Miasto_H", 5),
+        ("Miasto_F", "Miasto_H", 8),
+        ("Miasto_G", "Miasto_H", 3)
+    ]
+
+    for edge in edges:
+        graph.add_edge(*edge)
+
+    # Definiowanie punktu początkowego i końcowego
+    start_city = "Miasto_A"
+    end_city = "Miasto_H"
+
+    # Znalezienie najkrótszej ścieżki
+    shortest_path, total_distance = graph.dijkstra(start_city, end_city)
+
+    # Wyświetlenie wyników
+    print(f"Najkrótsza ścieżka z {start_city} do {end_city}: {shortest_path}")
+    print(f"Całkowita odległość: {total_distance} km")
+
+

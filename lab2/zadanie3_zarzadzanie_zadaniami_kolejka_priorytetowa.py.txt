@@ -1,0 +1,85 @@
+'''
+Zadanie 3
+    Zaimplementuj system zarządzania zadaniami z wykorzystaniem
+    kolejki priorytetowej, który umożliwia dynamiczne zmienianie
+    priorytetów zadań. Zadania o wyższym priorytecie są przetwarzane
+    szybciej. System powinien obsługiwać:
+    - dodawanie zadań (nazwa, priorytet, czas)
+    - modyfikacja priorytetów
+    - podniesienie wartości priorytetu wraz z upływem czasu
+'''
+
+import heapq
+
+class Task:
+    def __init__(self, name, priority, time):
+        self.name = name
+        self.priority = priority
+        self.time = time
+
+    def __lt__(self, other):
+        # Mniejsze priorytety mają pierwszeństwo (min-heap)
+        return self.priority < other.priority
+
+class PriorityQueue:
+    def __init__(self):
+        self.tasks = []
+
+    def add_task(self, task):
+        """Dodaje zadanie do kolejki priorytetowej."""
+        heapq.heappush(self.tasks, task)
+
+    def pop_task(self):
+        """Usuwa i zwraca zadanie o najwyższym priorytecie."""
+        if self.is_empty():
+            raise IndexError("Kolejka priorytetowa jest pusta.")
+        return heapq.heappop(self.tasks)
+
+    def is_empty(self):
+        """Sprawdza, czy kolejka priorytetowa jest pusta."""
+        return len(self.tasks) == 0
+
+    def modify_priority(self, task_name, new_priority):
+        """Zmienia priorytet dla określonego zadania."""
+        for task in self.tasks:
+            if task.name == task_name:
+                self.tasks.remove(task)
+                heapq.heapify(self.tasks)  # Odbudowujemy kolejkę
+                task.priority = new_priority
+                self.add_task(task)
+                return
+        raise ValueError(f"Zadanie o nazwie {task_name} nie istnieje.")
+
+    def increase_priority_over_time(self):
+        """Podnosi wartość priorytetu zadań z czasem."""
+        for task in self.tasks:
+            task.priority -= 1  # Im niższa wartość, tym wyższy priorytet
+        heapq.heapify(self.tasks)  # Odbudowujemy kolejkę
+
+    def display_tasks(self):
+        """Wyświetla wszystkie zadania w kolejce."""
+        return [(task.name, task.priority, task.time) for task in sorted(self.tasks)]
+
+# Przykładowe użycie
+if __name__ == "__main__":
+    pq = PriorityQueue()
+
+    # Dodawanie zadań
+    pq.add_task(Task("Zadanie A", 3, 30))
+    pq.add_task(Task("Zadanie B", 1, 20))
+    pq.add_task(Task("Zadanie C", 2, 40))
+
+    print("Zadania po dodaniu:", pq.display_tasks())
+
+    # Modyfikacja priorytetu
+    pq.modify_priority("Zadanie C", 0)
+    print("Zadania po zmianie priorytetu Zadania C:", pq.display_tasks())
+
+    # Podniesienie wartości priorytetu wraz z upływem czasu
+    pq.increase_priority_over_time()
+    print("Zadania po podniesieniu priorytetów:", pq.display_tasks())
+
+    # Przetwarzanie zadań
+    while not pq.is_empty():
+        task = pq.pop_task()
+        print(f"Przetwarzanie: {task.name} (Priorytet: {task.priority}, Czas: {task.time})")

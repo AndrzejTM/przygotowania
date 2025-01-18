@@ -1,0 +1,131 @@
+'''
+Przygotuj listy o ró¿nych strukturach (np. losowe, czêœciowo posortowane, odwrotnie posortowane) i zbadaj, 
+jak ró¿ne algorytmy sortowania radz¹ sobie z nimi pod k¹tem czasu dzia³ania. 
+
+import time
+def zmierz_czas_sortowania(func, lista):
+    	start = time.time()    
+	func()    
+	koniec = time.time()    
+	return koniec - start
+
+def generuj_liste(rozmiar, zakres):        
+	return [random.randint(0, zakres) for _ in range(rozmiar)]
+'''
+
+import random
+import time
+
+def zmierz_czas_sortowania(func, lista):
+    """
+    Funkcja mierzy czas wykonywania funkcji sortowania.
+    func - funkcja sortuj¹ca
+    lista - lista do posortowania
+    """
+    start = time.time()
+    func(lista)
+    koniec = time.time()
+    return koniec - start
+
+def generuj_liste_losowa(rozmiar, zakres):
+    """
+    Funkcja generuje listê losowych liczb.
+    rozmiar - iloœæ elementów w liœcie
+    zakres - maksymalna wartoœæ elementu w liœcie
+    """
+    return [random.randint(0, zakres) for _ in range(rozmiar)]
+
+def generuj_liste_czesciowo_posortowana(rozmiar, zakres, procent_posortowania):
+    """
+    Funkcja generuje listê czêœciowo posortowan¹.
+    rozmiar - iloœæ elementów w liœcie
+    zakres - maksymalna wartoœæ elementu w liœcie
+    procent_posortowania - czêœæ listy, która bêdzie posortowana
+    """
+    lista = generuj_liste_losowa(rozmiar, zakres)
+    podzial = int(rozmiar * procent_posortowania)
+    lista[:podzial] = sorted(lista[:podzial])
+    return lista
+
+def generuj_liste_odwrotnie_posortowana(rozmiar, zakres):
+    """
+    Funkcja generuje listê odwrotnie posortowan¹.
+    rozmiar - iloœæ elementów w liœcie
+    zakres - maksymalna wartoœæ elementu w liœcie
+    """
+    return sorted([random.randint(0, zakres) for _ in range(rozmiar)], reverse=True)
+
+def sortowanie_babelkowe(lista):
+    """
+    Algorytm sortowania b¹belkowego.
+    lista - lista do posortowania
+    """
+    n = len(lista)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if lista[j] > lista[j + 1]:
+                lista[j], lista[j + 1] = lista[j + 1], lista[j]
+
+def sortowanie_przez_wstawianie(lista):
+    """
+    Algorytm sortowania przez wstawianie.
+    lista - lista do posortowania
+    """
+    for i in range(1, len(lista)):
+        klucz = lista[i]
+        j = i - 1
+        while j >= 0 and klucz < lista[j]:
+            lista[j + 1] = lista[j]
+            j -= 1
+        lista[j + 1] = klucz
+
+def sortowanie_szybkie(lista):
+    """
+    Algorytm sortowania szybkiego (rekurencyjny).
+    lista - lista do posortowania
+    """
+    if len(lista) <= 1:
+        return lista
+    else:
+        pivot = lista[0]
+        mniejsze = [x for x in lista[1:] if x <= pivot]
+        wieksze = [x for x in lista[1:] if x > pivot]
+        return sortowanie_szybkie(mniejsze) + [pivot] + sortowanie_szybkie(wieksze)
+
+# Przygotowanie testu
+rozmiary_list = [100, 1000, 5000]
+zakres = 10000
+procent_posortowania = 0.5
+
+# Algorytmy sortowania
+algorytmy = {
+    "Sortowanie b¹belkowe": sortowanie_babelkowe,
+    "Sortowanie przez wstawianie": sortowanie_przez_wstawianie,
+    "Sortowanie szybkie": lambda lista: sortowanie_szybkie(lista),
+    "Wbudowane sortowanie": lambda lista: lista.sort()
+}
+
+# Wyniki
+wyniki = []
+
+for rozmiar in rozmiary_list:
+    typy_list = {
+        "Losowa": generuj_liste_losowa(rozmiar, zakres),
+        "Czêœciowo posortowana": generuj_liste_czesciowo_posortowana(rozmiar, zakres, procent_posortowania),
+        "Odwrotnie posortowana": generuj_liste_odwrotnie_posortowana(rozmiar, zakres)
+    }
+
+    for nazwa_algorytmu, algorytm in algorytmy.items():
+        for nazwa_typu, lista in typy_list.items():
+            lista_kopia = lista.copy()
+            czas = zmierz_czas_sortowania(lambda l=lista_kopia: algorytm(l), lista_kopia)
+            wyniki.append((nazwa_algorytmu, nazwa_typu, rozmiar, czas))
+
+# Wyœwietlenie wyników
+import pandas as pd
+wyniki_df = pd.DataFrame(wyniki, columns=["Algorytm", "Typ listy", "Rozmiar listy", "Czas [s]"])
+wyniki_df.sort_values(by=["Algorytm", "Typ listy", "Rozmiar listy"], inplace=True)
+
+# Wyœwietl wyniki w przyjazny sposób
+import ace_tools as tools  # This is a placeholder for your display tools
+tools.display_dataframe_to_user(name="Porównanie algorytmów sortowania dla pocz¹tkuj¹cych", dataframe=wyniki_df)

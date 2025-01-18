@@ -1,0 +1,54 @@
+'''
+Napisz funkcjê implementuj¹c¹ sortowanie b¹belkowe. 
+Porównaj jej dzia³anie na ma³ej (np. 10 elementów) i du¿ej (np. 1000 elementów) liœcie. 
+Algorytm ma zakoñczyæ dzia³anie dzia³anie, gdy podczas przebiegu nie nast¹pi ¿adna zamiana elementów.
+
+import time
+def zmierz_czas_sortowania(func, lista):
+   	start = time.time()    
+	func()    
+	koniec = time.time()    
+	return koniec - start
+
+def generuj_liste(rozmiar, zakres):        
+	return [random.randint(0, zakres) for _ in range(rozmiar)] 
+'''
+import random
+import time
+
+def bubble_sort(lista):
+    n = len(lista)
+    for i in range(n):
+        swapped = False
+        for j in range(0, n - i - 1):
+            if lista[j] > lista[j + 1]:
+                lista[j], lista[j + 1] = lista[j + 1], lista[j]
+                swapped = True
+        # Jeœli nie by³o zamiany elementów, zakoñcz sortowanie
+        if not swapped:
+            break
+
+# Funkcja do pomiaru czasu sortowania
+def zmierz_czas_sortowania(func, lista):
+    start = time.time()
+    func(lista)
+    koniec = time.time()
+    return koniec - start
+
+# Funkcja do generowania listy
+def generuj_liste(rozmiar, zakres):
+    return [random.randint(0, zakres) for _ in range(rozmiar)]
+
+# Test na ma³ej liœcie
+mala_lista = generuj_liste(10, 100)
+czas_malej = zmierz_czas_sortowania(bubble_sort, mala_lista[:])
+print("Ma³a lista (10 elementów):")
+print(mala_lista)
+print(f"Czas sortowania ma³ej listy: {czas_malej:.6f} sekund")
+
+# Test na du¿ej liœcie
+duza_lista = generuj_liste(1000, 1000)
+czas_duzej = zmierz_czas_sortowania(bubble_sort, duza_lista[:])
+print("\nDu¿a lista (1000 elementów):")
+print(duza_lista[:10], "... (pozosta³e elementy pominiête)")
+print(f"Czas sortowania du¿ej listy: {czas_duzej:.6f} sekund")

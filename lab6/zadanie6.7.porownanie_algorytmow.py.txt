@@ -1,0 +1,79 @@
+'''
+Napisz program porównuj¹cy czas dzia³ania ró¿nych algorytmów sortowania (np. b¹belkowego, przez wstawianie, szybkiego) 
+dla list o ró¿nych rozmiarach (np. 10, 100, 1000 elementów). 
+
+import time
+def zmierz_czas_sortowania(func, lista):
+    	start = time.time()    
+	func()    
+	koniec = time.time()    
+	return koniec - start
+
+def generuj_liste(rozmiar, zakres):        
+	return [random.randint(0, zakres) for _ in range(rozmiar)] 
+'''
+import time
+import random
+
+def zmierz_czas_sortowania(algorytm, lista):
+    """Mierzy czas dzia³ania funkcji sortuj¹cej."""
+    start = time.time()  # Zaczynamy mierzenie czasu
+    algorytm(lista)  # Wywo³ujemy funkcjê sortuj¹c¹
+    koniec = time.time()  # Koñczymy mierzenie czasu
+    return koniec - start  # Zwracamy ró¿nicê czasu
+
+def generuj_liste(rozmiar, zakres):
+    """Tworzy listê losowych liczb."""
+    return [random.randint(0, zakres) for _ in range(rozmiar)]
+
+def bubble_sort(lista):
+    """Sortuje listê metod¹ b¹belkow¹."""
+    n = len(lista)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if lista[j] > lista[j+1]:  # Jeœli element jest wiêkszy od nastêpnego
+                lista[j], lista[j+1] = lista[j+1], lista[j]  # Zamieniamy miejscami
+
+def insertion_sort(lista):
+    """Sortuje listê metod¹ przez wstawianie."""
+    for i in range(1, len(lista)):
+        klucz = lista[i]
+        j = i - 1
+        while j >= 0 and klucz < lista[j]:  # Przesuwamy elementy w lewo
+            lista[j + 1] = lista[j]
+            j -= 1
+        lista[j + 1] = klucz  # Wstawiamy element na w³aœciwe miejsce
+
+def quick_sort(lista):
+    """Sortuje listê metod¹ szybk¹ (rekurencyjnie)."""
+    if len(lista) <= 1:
+        return lista  # Jeœli lista ma 1 lub mniej elementów, jest ju¿ posortowana
+    else:
+        pivot = lista[0]  # Wybieramy pierwszy element jako punkt odniesienia
+        mniejsze = [x for x in lista[1:] if x <= pivot]  # Elementy mniejsze lub równe pivot
+        wieksze = [x for x in lista[1:] if x > pivot]  # Elementy wiêksze ni¿ pivot
+        return quick_sort(mniejsze) + [pivot] + quick_sort(wieksze)
+
+def testuj_sortowanie():
+    """Testuje ró¿ne metody sortowania na listach o ró¿nych rozmiarach."""
+    rozmiary = [10, 100, 1000]  # Rozmiary list do przetestowania
+    zakres = 1000  # Maksymalna wartoœæ w liœcie
+    algorytmy = {
+        "Sortowanie b¹belkowe": bubble_sort,
+        "Sortowanie przez wstawianie": insertion_sort,
+        "Sortowanie szybkie": lambda l: quick_sort(l[:])  # Tworzymy kopiê listy dla quick_sort
+    }
+
+    print("Porównanie czasów sortowania:")
+
+    for rozmiar in rozmiary:
+        lista = generuj_liste(rozmiar, zakres)  # Tworzymy losow¹ listê
+        print(f"\nRozmiar listy: {rozmiar}")
+
+        for nazwa, algorytm in algorytmy.items():
+            lista_kopia = lista[:]  # Tworzymy kopiê listy do testowania
+            czas = zmierz_czas_sortowania(algorytm, lista_kopia)  # Mierzymy czas
+            print(f"{nazwa}: {czas:.6f} sekund")
+
+if __name__ == "__main__":
+    testuj_sortowanie()

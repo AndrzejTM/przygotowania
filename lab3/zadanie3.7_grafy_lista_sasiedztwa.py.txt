@@ -1,0 +1,61 @@
+'''
+2. Stwórz własną strukturę grafu jako słownik list sąsiedztwa:
+   Napisz funkcje, które pozwolą na dodawanie węzłów i krawędzi
+   oraz wyświetlanie grafu. Strukturę grafu zbuduj jako słownik, gdzie:
+    - Każdy węzeł jest kluczem słownika.
+    - Lista sąsiedztwa zawiera węzły, z którymi jest połączony
+    
+   * Wymagana walidacja
+'''
+
+class Graph:
+    def __init__(self):
+        """Inicjalizuje graf jako słownik list sąsiedztwa."""
+        self.adjacency_list = {}
+
+    def add_node(self, node):
+        """Dodaje węzeł do grafu, jeśli jeszcze nie istnieje."""
+        if node in self.adjacency_list:
+            print(f"Węzeł '{node}' już istnieje.")
+        else:
+            self.adjacency_list[node] = []
+            print(f"Dodano węzeł '{node}'.")
+
+    def add_edge(self, from_node, to_node):
+        """Dodaje krawędź między węzłami, tworząc brakujące węzły w razie potrzeby."""
+        if from_node not in self.adjacency_list:
+            print(f"Węzeł '{from_node}' nie istnieje. Dodawanie...")
+            self.add_node(from_node)
+        if to_node not in self.adjacency_list:
+            print(f"Węzeł '{to_node}' nie istnieje. Dodawanie...")
+            self.add_node(to_node)
+
+        if to_node in self.adjacency_list[from_node]:
+            print(f"Krawędź z '{from_node}' do '{to_node}' już istnieje.")
+        else:
+            self.adjacency_list[from_node].append(to_node)
+            print(f"Dodano krawędź z '{from_node}' do '{to_node}'.")
+
+    def display(self):
+        """Wyświetla graf jako listę sąsiedztwa."""
+        print("Graf (lista sąsiedztwa):")
+        for node, neighbors in self.adjacency_list.items():
+            print(f"{node}: {', '.join(neighbors) if neighbors else 'Brak połączeń'}")
+
+# Przykład użycia
+if __name__ == "__main__":
+    graph = Graph()
+
+    # Dodawanie węzłów
+    graph.add_node("A")
+    graph.add_node("B")
+    graph.add_node("C")
+
+    # Dodawanie krawędzi
+    graph.add_edge("A", "B")
+    graph.add_edge("B", "C")
+    graph.add_edge("A", "C")
+    graph.add_edge("C", "A")
+
+    # Wyświetlanie grafu
+    graph.display()

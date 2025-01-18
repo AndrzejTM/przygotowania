@@ -1,0 +1,17 @@
+'''
+Zadanie 1. Wyszukiwanie najdłuższego imienia
+Przykładowe dane: ["Anna", "Krzysztof", "Marek", "Ewa", "Tomasz",
+"Aleksandra", "Piotr", "Magdalena"]
+Napisz funkcję, która przyjmie w parametrze listę 8 imion, a następnie zwróci imię o
+największej liczbie znaków.
+'''
+
+def najdluzsze_imie(imiona):
+    return max(imiona, key=len) if imiona else None
+
+# Przykładowe dane
+imiona = ["Anna", "Krzysztof", "Marek", "Ewa", "Tomasz", "Aleksandra", "Piotr", "Magdalena"]
+
+# Wywołanie funkcji i wypisanie wyniku
+wynik = najdluzsze_imie(imiona)
+print("Najdłuższe imię to:", wynik)

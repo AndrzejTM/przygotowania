@@ -1,0 +1,85 @@
+'''
+Zadanie
+Zaimplementuj klasę reprezentującą listę jednokierunkową opartą na klasach w języku Python bez korzystania z wbudowanej listy ([]) ani żadnych gotowych struktur. Lista powinna umożliwiać podstawowe operacje :
+▪
+Dodawanie el. na początku i w środku,
+▪
+Usuwanie początku i środkowych el.,
+▪
+Wyświetlanie elementów listy.
+'''
+
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+class SinglyLinkedList:
+    def __init__(self):
+        self.head = None
+
+    def add_at_beginning(self, value):
+        """Dodaje element na początku listy."""
+        new_node = Node(value)
+        new_node.next = self.head
+        self.head = new_node
+
+    def add_after(self, target_value, value):
+        """Dodaje element po określonym elemencie."""
+        current = self.head
+        while current:
+            if current.value == target_value:
+                new_node = Node(value)
+                new_node.next = current.next
+                current.next = new_node
+                return
+            current = current.next
+        raise ValueError(f"Element z wartością {target_value} nie istnieje w liście.")
+
+    def remove_from_beginning(self):
+        """Usuwa pierwszy element z listy."""
+        if not self.head:
+            raise ValueError("Lista jest pusta.")
+        self.head = self.head.next
+
+    def remove_value(self, value):
+        """Usuwa pierwszy napotkany element z podaną wartością."""
+        if not self.head:
+            raise ValueError("Lista jest pusta.")
+
+        if self.head.value == value:
+            self.head = self.head.next
+            return
+
+        current = self.head
+        while current.next:
+            if current.next.value == value:
+                current.next = current.next.next
+                return
+            current = current.next
+
+        raise ValueError(f"Element z wartością {value} nie istnieje w liście.")
+
+    def display(self):
+        """Wyświetla wszystkie elementy listy."""
+        elements = []
+        current = self.head
+        while current:
+            elements.append(current.value)
+            current = current.next
+        return elements
+
+# Przykładowe użycie
+if __name__ == "__main__":
+    lista = SinglyLinkedList()
+    lista.add_at_beginning(10)
+    lista.add_at_beginning(20)
+    lista.add_at_beginning(30)
+    lista.add_after(20, 25)
+    print("Lista po dodaniu elementów:", lista.display())
+
+    lista.remove_from_beginning()
+    print("Lista po usunięciu elementu z początku:", lista.display())
+
+    lista.remove_value(25)
+    print("Lista po usunięciu elementu o wartości 25:", lista.display())

@@ -1,0 +1,88 @@
+'''
+Zadanie dodatkowe:
+    Do zadania 3 dodaj limit czasu po, którym zadanie ulegnie usunięciu
+    z kolejki w razie jego niewykonania.
+'''
+
+import heapq
+import time
+
+class Task:
+    def __init__(self, name, priority, duration, expiry_time):
+        self.name = name
+        self.priority = priority
+        self.duration = duration
+        self.expiry_time = expiry_time  # Czas wygaśnięcia zadania
+
+    def __lt__(self, other):
+        # Mniejsze priorytety mają pierwszeństwo (min-heap)
+        return self.priority < other.priority
+
+class PriorityQueue:
+    def __init__(self):
+        self.tasks = []
+
+    def add_task(self, task):
+        """Dodaje zadanie do kolejki priorytetowej."""
+        heapq.heappush(self.tasks, task)
+
+    def pop_task(self):
+        """Usuwa i zwraca zadanie o najwyższym priorytecie."""
+        if self.is_empty():
+            raise IndexError("Kolejka priorytetowa jest pusta.")
+        return heapq.heappop(self.tasks)
+
+    def is_empty(self):
+        """Sprawdza, czy kolejka priorytetowa jest pusta."""
+        return len(self.tasks) == 0
+
+    def modify_priority(self, task_name, new_priority):
+        """Zmienia priorytet dla określonego zadania."""
+        for task in self.tasks:
+            if task.name == task_name:
+                self.tasks.remove(task)
+                heapq.heapify(self.tasks)  # Odbudowujemy kolejkę
+                task.priority = new_priority
+                self.add_task(task)
+                return
+        raise ValueError(f"Zadanie o nazwie {task_name} nie istnieje.")
+
+    def increase_priority_over_time(self):
+        """Podnosi wartość priorytetu zadań z czasem."""
+        for task in self.tasks:
+            task.priority -= 1  # Im niższa wartość, tym wyższy priorytet
+        heapq.heapify(self.tasks)  # Odbudowujemy kolejkę
+
+    def remove_expired_tasks(self):
+        """Usuwa zadania, które przekroczyły czas wygaśnięcia."""
+        current_time = time.time()
+        self.tasks = [task for task in self.tasks if task.expiry_time > current_time]
+        heapq.heapify(self.tasks)  # Odbudowujemy kolejkę
+
+    def display_tasks(self):
+        """Wyświetla wszystkie zadania w kolejce."""
+        current_time = time.time()
+        return [(task.name, task.priority, task.duration, task.expiry_time - current_time) for task in sorted(self.tasks)]
+
+# Przykładowe użycie
+if __name__ == "__main__":
+    pq = PriorityQueue()
+    current_time = time.time()
+
+    # Dodawanie zadań z limitem czasu wygaśnięcia (czas obecny + limit w sekundach)
+    pq.add_task(Task("Zadanie A", 3, 30, current_time + 10))
+    pq.add_task(Task("Zadanie B", 1, 20, current_time + 5))
+    pq.add_task(Task("Zadanie C", 2, 40, current_time + 15))
+
+    print("Zadania po dodaniu:", pq.display_tasks())
+
+    # Symulacja czasu i przetwarzania zadań
+    time.sleep(6)  # Symulacja opóźnienia
+    pq.remove_expired_tasks()
+    print("Zadania po usunięciu wygasłych:", pq.display_tasks())
+
+    # Przetwarzanie pozostałych zadań
+    while not pq.is_empty():
+        task = pq.pop_task()
+        print(f"Przetwarzanie: {task.name} (Priorytet: {task.priority}, Czas: {task.duration})")
+        pq.remove_expired_tasks()  # Usuwanie wygasłych zadań po każdym przetworzeniu

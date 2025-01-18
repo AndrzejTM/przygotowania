@@ -1,0 +1,17 @@
+'''
+Zadanie 5. Filtrowanie imion na literę “P”
+Przykładowe dane: ["Emilia", "Krzysztof", "Ela", "Marek", "Edward", "Ewa",
+"Zbigniew", "Anna", "Eryk", "Ola"]
+Napisz funkcję, która przyjmie w parametrze listę 10 imion i zwróci listę, zawierającą tylko
+imiona zaczynające się na literę “E” (bez względu na wielkość litery, czyli “E” lub “e”).
+'''
+
+def imiona_na_e(imiona):
+    return [imie for imie in imiona if imie.lower().startswith('e')]
+
+# Przykładowe dane
+imiona = ["Emilia", "Krzysztof", "Ela", "Marek", "Edward", "Ewa", "Zbigniew", "Anna", "Eryk", "Ola"]
+
+# Wywołanie funkcji i wypisanie wyniku
+wynik = imiona_na_e(imiona)
+print("Imiona na literę 'E':", wynik)

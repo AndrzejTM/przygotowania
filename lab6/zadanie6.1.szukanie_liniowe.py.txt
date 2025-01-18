@@ -1,0 +1,27 @@
+'''
+Algorytmy wyszukiwania:
+Zmodyfikuj funkcjê wyszukiwania liniowego tak, aby zwraca³a wszystkie indeksy wyst¹pieñ szukanego elementu
+'''
+
+def wyszukiwanie_liniowe(lista, element):
+    """
+    Funkcja wyszukiwania liniowego, która zwraca wszystkie indeksy wyst¹pieñ elementu w liœcie.
+
+    Parametry:
+    lista (list): Lista, w której szukamy elementu.
+    element: Element, którego szukamy w liœcie.
+
+    Zwraca:
+    list: Lista indeksów, gdzie element wystêpuje w podanej liœcie.
+    """
+    indeksy = []
+    for indeks, wartosc in enumerate(lista):
+        if wartosc == element:
+            indeksy.append(indeks)
+    return indeksy
+
+# Przyk³ad u¿ycia
+lista_przyklad = [1, 2, 3, 2, 4, 2, 5]
+szukany_element = 2
+wynik = wyszukiwanie_liniowe(lista_przyklad, szukany_element)
+print(f"Element {szukany_element} znaleziono na indeksach: {wynik}")

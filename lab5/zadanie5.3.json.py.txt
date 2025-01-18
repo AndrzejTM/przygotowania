@@ -1,0 +1,38 @@
+'''
+Zadanie 3: Praca z danymi JSON 
+1. Wczytaj dane z pliku products.json. 
+2. Wylicz ³¹czn¹ wartoœæ produktów (cena × iloœæ) w ka¿dej kategorii. 
+3. Zapisz wyniki w nowym pliku category_summary.json w formacie:
+ {    "Kategoria 1": 500.0,    "Kategoria 2": 500.0 }
+Rozszerzenie ZnajdŸ najdro¿szy produkt i zapisz jego nazwê w pliku most_expensive_product.txt.
+'''
+
+import json
+
+# Wczytanie danych z pliku products.json
+file_path = '/mnt/data/products.json'
+
+with open(file_path, 'r') as file:
+    products = json.load(file)
+
+# Obliczanie ³¹cznej wartoœci produktów w ka¿dej kategorii
+category_summary = {}
+for product in products:
+    category = product['kategoria']
+    total_value = product['cena'] * product['ilosc']
+    category_summary[category] = category_summary.get(category, 0) + total_value
+
+# Zapis wyników w nowym pliku category_summary.json
+category_summary_path = '/mnt/data/category_summary.json'
+with open(category_summary_path, 'w') as summary_file:
+    json.dump(category_summary, summary_file, ensure_ascii=False, indent=4)
+
+# Znalezienie najdro¿szego produktu
+most_expensive_product = max(products, key=lambda x: x['cena'])
+most_expensive_product_path = '/mnt/data/most_expensive_product.txt'
+with open(most_expensive_product_path, 'w') as expensive_file:
+    expensive_file.write(most_expensive_product['nazwa'])
+
+print("Pliki zosta³y zapisane:")
+print(f"- Podsumowanie kategorii: {category_summary_path}")
+print(f"- Najdro¿szy produkt: {most_expensive_product_path}")

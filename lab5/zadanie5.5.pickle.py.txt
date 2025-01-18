@@ -1,0 +1,71 @@
+'''
+Zadanie 5: Serializacja obiektów za pomoc¹ Pickle 
+class Pracownik:    
+	def __init__(self, imie, wiek, stanowisko):
+	        self.imie = imie
+        	self.wiek = wiek
+	        self.stanowisko = stanowisko
+	def __repr__(self):
+	        return f"Imiê: {self.imie}, Wiek: {self.wiek}, Stanowisko: {self.stanowisko}"
+
+1. W pliku pracownicy.pkl znajduj¹ siê obiekty klasy Pracownik. 2. Wczytaj plik i wyœwietl szczegó³y ka¿dego pracownika w formacie:
+ Imiê: Jan, Wiek: 30, Stanowisko: In¿ynier
+3. Dodaj nowego pracownika, a nastêpnie zapisz zaktualizowan¹ listê pracowników z powrotem do pliku pracownicy.pkl.
+
+Zadanie 5: Serializacja obiektów za pomoc¹ Pickle class Pracownik:    def __init__(self, imie, wiek, stanowisko):        self.imie = imie        self.wiek = wiek        self.stanowisko = stanowisko    def __repr__(self):        return f"Imiê: {self.imie}, Wiek: {self.wiek}, Stanowisko: {self.stanowisko}"
+1. W pliku pracownicy.pkl znajduj¹ siê obiekty klasy Pracownik. 2. Wczytaj plik i wyœwietl szczegó³y ka¿dego pracownika w formacie:
+ Imiê: Jan, Wiek: 30, Stanowisko: In¿ynier
+3. Dodaj nowego pracownika, a nastêpnie zapisz zaktualizowan¹ listê pracowników z powrotem do pliku pracownicy.pkl. 
+
+Rozszerzenie ZnajdŸ pracownika o najd³u¿szym sta¿u (najstarszego) i zapisz jego dane w pliku senior_pracownik.pkl.
+'''
+
+import pickle
+
+# Definicja klasy Pracownik
+class Pracownik:
+    def __init__(self, imie, wiek, stanowisko):
+        self.imie = imie
+        self.wiek = wiek
+        self.stanowisko = stanowisko
+
+    def __repr__(self):
+        return f"Imiê: {self.imie}, Wiek: {self.wiek}, Stanowisko: {self.stanowisko}"
+
+# Krok 1: Wczytanie danych z pliku pracownicy.pkl
+file_path = '/mnt/data/pracownicy.pkl'  # Œcie¿ka do pliku
+with open(file_path, 'rb') as file:
+    pracownicy = pickle.load(file)  # Wczytanie listy pracowników
+
+# Krok 2: Wyœwietlenie szczegó³ów ka¿dego pracownika
+print("Szczegó³y pracowników:")
+for pracownik in pracownicy:
+    print(pracownik)
+
+# Krok 3: Dodanie nowego pracownika
+nowy_pracownik = Pracownik(imie="Marek", wiek=40, stanowisko="Dyrektor")  # Tworzenie nowego obiektu
+pracownicy.append(nowy_pracownik)  # Dodanie do listy
+
+# Krok 4: Zapis zaktualizowanej listy do pliku
+with open(file_path, 'wb') as file:
+    pickle.dump(pracownicy, file)  # Zapis listy do pliku
+
+# Krok 5: Znalezienie najstarszego pracownika
+def znajdz_najstarszego(lista_pracownikow):
+    najstarszy = lista_pracownikow[0]
+    for pracownik in lista_pracownikow:
+        if pracownik.wiek > najstarszy.wiek:
+            najstarszy = pracownik
+    return najstarszy
+
+najstarszy_pracownik = znajdz_najstarszego(pracownicy)  # Znalezienie pracownika z najwy¿szym wiekiem
+
+# Krok 6: Zapis danych najstarszego pracownika do nowego pliku
+senior_file_path = '/mnt/data/senior_pracownik.pkl'  # Œcie¿ka do pliku
+with open(senior_file_path, 'wb') as file:
+    pickle.dump(najstarszy_pracownik, file)  # Zapis danych najstarszego pracownika
+
+print("Dodano nowego pracownika i zapisano zaktualizowan¹ listê.")
+print("Dane najstarszego pracownika zapisano w:", senior_file_path)
+
+

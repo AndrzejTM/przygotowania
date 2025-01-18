@@ -1,0 +1,61 @@
+'''
+Przetestuj algorytm sortowania przez wstawianie na liœcie czêœciowo posortowanej i ca³kowicie losowej. 
+Porównaj czas dzia³ania w obu przypadkach.
+
+import time
+def zmierz_czas_sortowania(func, lista):
+    	start = time.time()    
+	func()    
+	koniec = time.time()    
+	return koniec - start
+
+def generuj_liste(rozmiar, zakres):        
+	return [random.randint(0, zakres) for _ in range(rozmiar)] 
+'''
+import random
+import time
+
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and key < arr[j]:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+
+def zmierz_czas_sortowania(func, lista):
+    start = time.time()
+    func(lista)
+    koniec = time.time()
+    return koniec - start
+
+def generuj_liste(rozmiar, zakres):
+    return [random.randint(0, zakres) for _ in range(rozmiar)]
+
+def generuj_czesciowo_posortowana_liste(rozmiar, zakres, procent_posortowania):
+    n_posortowane = int(rozmiar * procent_posortowania)
+    n_losowe = rozmiar - n_posortowane
+    posortowana = sorted([random.randint(0, zakres) for _ in range(n_posortowane)])
+    losowa = [random.randint(0, zakres) for _ in range(n_losowe)]
+    return posortowana + losowa
+
+# Testowanie
+rozmiar_listy = 1000
+zakres = 10000
+
+# Generowanie list
+losowa_lista = generuj_liste(rozmiar_listy, zakres)
+czesciowo_posortowana_lista = generuj_czesciowo_posortowana_liste(rozmiar_listy, zakres, 0.9)
+
+# Kopie list do sortowania
+lista1 = losowa_lista.copy()
+lista2 = czesciowo_posortowana_lista.copy()
+
+# Pomiar czasu
+czas_losowa = zmierz_czas_sortowania(insertion_sort, lista1)
+czas_czesciowo_posortowana = zmierz_czas_sortowania(insertion_sort, lista2)
+
+# Wyniki
+print(f"Czas sortowania listy losowej: {czas_losowa:.6f} sekund")
+print(f"Czas sortowania listy czêœciowo posortowanej: {czas_czesciowo_posortowana:.6f} sekund")

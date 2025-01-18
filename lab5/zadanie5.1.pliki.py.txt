@@ -1,0 +1,74 @@
+'''
+Zadanie 1: Analiza logów systemowych
+1.
+Wczytaj plik system_logs.txt linia po linii.
+2.
+Policz liczbę zdarzeń każdego typu (INFO, WARNING, ERROR) i wypisz wyniki na ekranie.
+3.
+Zapisz wszystkie zdarzenia typu ERROR do nowego pliku errors.log.
+Rozszerzenie Znajdź godzinę, w której wystąpiło najwięcej zdarzeń, i zapisz ją w pliku summary.log.
+'''
+
+# Pliki wejściowe i wyjściowe
+input_file_path = '/mnt/data/system_logs.txt'
+error_file_path = '/mnt/data/errors.log'
+summary_file_path = '/mnt/data/summary.log'
+
+# Liczniki zdarzeń
+info_count = 0
+warning_count = 0
+error_count = 0
+hourly_counts = {}  # Licznik zdarzeń w każdej godzinie
+error_events = []  # Lista do przechowywania zdarzeń typu ERROR
+
+# Otwieranie pliku logów
+with open(input_file_path, 'r') as log_file:
+    for line in log_file:
+        # Usuwanie białych znaków na końcach linii
+        line = line.strip()
+        
+        # Sprawdzenie, czy linia jest pusta
+        if not line:
+            continue
+
+        # Podział linii na części
+        parts = line.split(' ')
+        
+        # Pobieranie typu zdarzenia (np. INFO, WARNING, ERROR)
+        event_type = parts[-2]
+        if event_type == "INFO":
+            info_count += 1
+        elif event_type == "WARNING":
+            warning_count += 1
+        elif event_type == "ERROR":
+            error_count += 1
+            error_events.append(line)
+
+        # Pobieranie godziny z linii (np. z [2024-11-10 10:15:30] pobiera 10)
+        timestamp = parts[0][1:]  # Usuwamy pierwsze nawiasy kwadratowe
+        hour = timestamp.split(':')[0][-2:]  # Pobieramy godzinę (10 w przykładzie)
+        
+        # Zwiększamy licznik zdarzeń dla tej godziny
+        if hour not in hourly_counts:
+            hourly_counts[hour] = 0
+        hourly_counts[hour] += 1
+
+# Zapisywanie zdarzeń typu ERROR do pliku
+with open(error_file_path, 'w') as error_file:
+    for error in error_events:
+        error_file.write(error + '\n')
+
+# Znajdowanie godziny z największą liczbą zdarzeń
+most_common_hour = None
+max_events = 0
+for hour, count in hourly_counts.items():
+    if count > max_events:
+        max_events = count
+        most_common_hour = hour
+
+# Zapisywanie godziny z największą liczbą zdarzeń do pliku
+with open(summary_file_path, 'w') as summary_file:
+    if most_common_hour is not None:
+        summary_file.write(f"Godzina z największą liczbą zdarzeń: {most_common_hour} ({max_events} zdarzeń)\n")
+    else:
+        summary_file.write("Brak zdarzeń do analizy.\n")

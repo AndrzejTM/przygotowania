@@ -1,0 +1,212 @@
+'''
+Dodaj do klasy BSTree metodę szukaj_klucza(klucz), która znajdzie i zwróci węzeł o podanym kluczu. Jeśli węzeł o podanym kluczu nie istnieje, metoda powinna zwrócić informację "Nie znaleziono klucza".
+▪
+Wyszukiwanie powinno być wykonane w sposób iteracyjny.
+▪
+Przetestuj metodę, wyszukując kilka elementów w istniejącym drzewie, oraz sprawdź przypadek, gdy element nie istnieje.
+
+
+from helper import wizualizuj_drzewo
+
+class Wezel:
+    def __init__(self, klucz):
+        self.klucz = klucz
+        self.lewy = None
+        self.prawy = None
+
+
+class BSTree:
+    def __init__(self):
+        self.korzen = None
+
+    def _wstawianie_rekurencyjne(self, wezel, klucz):
+        if klucz < wezel.klucz:
+            if wezel.lewy is None:
+                wezel.lewy = Wezel(klucz)
+            else:
+                self._wstawianie_rekurencyjne(wezel.lewy, klucz)
+        elif klucz > wezel.klucz:
+            if wezel.prawy is None:
+                wezel.prawy = Wezel(klucz)
+            else:
+                self._wstawianie_rekurencyjne(wezel.prawy, klucz)
+
+    def _wstawanie_iteracyjne(self, klucz):
+        obecny_wezel = self.korzen
+
+        while obecny_wezel is not None and obecny_wezel.klucz != klucz:
+            if klucz < obecny_wezel.klucz:
+                if obecny_wezel.lewy is None:
+                    obecny_wezel.lewy = Wezel(klucz)
+                    return
+
+                obecny_wezel = obecny_wezel.lewy
+            else:
+                if obecny_wezel.prawy is None:
+                    obecny_wezel.prawy = Wezel(klucz)
+                    return
+
+                obecny_wezel = obecny_wezel.prawy
+
+    def wstawianie_klucza(self, klucz):
+        if self.korzen is None:
+            self.korzen = Wezel(klucz)
+        else:
+            self._wstawianie_rekurencyjne(self.korzen, klucz)
+            # self._wstawanie_iteracyjne(klucz)
+
+    def _min_klucz(self, obecny_wezel = None):
+        if obecny_wezel is None:
+            obecny_wezel = self.korzen
+        while obecny_wezel.lewy is not None:
+            obecny_wezel = obecny_wezel.lewy
+        return obecny_wezel
+
+    def usuwanie_klucza(self, klucz):
+        self.korzen = self._usun_wezel(self.korzen, klucz)
+
+    def _usun_wezel(self, wezel, klucz):
+        if wezel is None:
+            return None
+
+        if klucz < wezel.klucz:
+            wezel.lewy = self._usun_wezel(wezel.lewy, klucz)
+        elif klucz > wezel.klucz:
+            wezel.prawy = self._usun_wezel(wezel.prawy, klucz)
+        else:
+            # 1. Węzeł nie ma dzieci
+            if wezel.lewy is None and wezel.prawy is None:
+                return None
+
+            # 2. Węzeł ma jedno dziecko
+            if wezel.lewy is None:  # Ma tylko prawe dziecko
+                return wezel.prawy
+            elif wezel.prawy is None:  # Ma tylko lewe dziecko
+                return wezel.lewy
+
+            # 3. Węzeł ma dwoje dzieci
+            nastepnik = self._min_klucz(wezel.prawy)
+            wezel.klucz = nastepnik.klucz
+            wezel.prawy = self._usun_wezel(wezel.prawy, nastepnik.klucz)
+
+        return wezel
+
+    def _LVR(self, wierzcholek):
+        if wierzcholek.lewy is not None:
+            self._LVR(wierzcholek.lewy)
+        print(wierzcholek.klucz, end=" ")
+        if wierzcholek.prawy is not None:
+            self._LVR(wierzcholek.prawy)
+
+    def wyswietlanie_drzewa(self):
+        if self.korzen is None:
+            print("Drzewo jest puste")
+            return
+
+        self._LVR(self.korzen)
+        print()
+
+
+
+if __name__ == "__main__":
+    bstree = BSTree()
+
+    bstree.wstawianie_klucza(8)
+    bstree.wstawianie_klucza(3)
+    bstree.wstawianie_klucza(1)
+    bstree.wstawianie_klucza(6)
+    bstree.wstawianie_klucza(4)
+    bstree.wstawianie_klucza(7)
+    bstree.wstawianie_klucza(10)
+    bstree.wstawianie_klucza(14)
+    bstree.wstawianie_klucza(13)
+
+    bstree.wyswietlanie_drzewa()
+    wizualizuj_drzewo(bstree.korzen)
+
+    bstree.usuwanie_klucza(8)
+
+    bstree.wyswietlanie_drzewa()
+    # wizualizuj_drzewo(bstree.korzen)
+
+'''
+
+class Wezel:
+    def __init__(self, klucz):
+        self.klucz = klucz
+        self.lewy = None
+        self.prawy = None
+
+
+class BSTree:
+    def __init__(self):
+        self.korzen = None
+
+    def _wstawianie_rekurencyjne(self, wezel, klucz):
+        if klucz < wezel.klucz:
+            if wezel.lewy is None:
+                wezel.lewy = Wezel(klucz)
+            else:
+                self._wstawianie_rekurencyjne(wezel.lewy, klucz)
+        elif klucz > wezel.klucz:
+            if wezel.prawy is None:
+                wezel.prawy = Wezel(klucz)
+            else:
+                self._wstawianie_rekurencyjne(wezel.prawy, klucz)
+
+    def wstawianie_klucza(self, klucz):
+        if self.korzen is None:
+            self.korzen = Wezel(klucz)
+        else:
+            self._wstawianie_rekurencyjne(self.korzen, klucz)
+
+    def szukaj_klucza(self, klucz):
+        """Szukaj klucza w drzewie w sposób iteracyjny."""
+        obecny = self.korzen
+
+        while obecny is not None:
+            if klucz == obecny.klucz:
+                return obecny
+            elif klucz < obecny.klucz:
+                obecny = obecny.lewy
+            else:
+                obecny = obecny.prawy
+
+        return "Nie znaleziono klucza"
+
+    def wyswietlanie_drzewa(self):
+        if self.korzen is None:
+            print("Drzewo jest puste")
+            return
+
+        def _LVR(wierzcholek):
+            if wierzcholek.lewy is not None:
+                _LVR(wierzcholek.lewy)
+            print(wierzcholek.klucz, end=" ")
+            if wierzcholek.prawy is not None:
+                _LVR(wierzcholek.prawy)
+
+        _LVR(self.korzen)
+        print()
+
+# Testowanie
+if __name__ == "__main__":
+    drzewo = BSTree()
+    drzewo.wstawianie_klucza(50)
+    drzewo.wstawianie_klucza(30)
+    drzewo.wstawianie_klucza(70)
+    drzewo.wstawianie_klucza(20)
+    drzewo.wstawianie_klucza(40)
+    drzewo.wstawianie_klucza(60)
+    drzewo.wstawianie_klucza(80)
+
+    print("Drzewo w porządku rosnącym:")
+    drzewo.wyswietlanie_drzewa()
+
+    print("\nSzukaj klucza 40:")
+    wynik = drzewo.szukaj_klucza(40)
+    print(wynik.klucz if isinstance(wynik, Wezel) else wynik)
+
+    print("\nSzukaj klucza 90:")
+    wynik = drzewo.szukaj_klucza(90)
+    print(wynik if isinstance(wynik, str) else wynik.klucz)

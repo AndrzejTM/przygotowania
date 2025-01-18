@@ -1,0 +1,96 @@
+'''
+3. Do klasy Graf dodaj funckjonalność reprezentacji grafu za pomocą macierzy sąsiedztwa.
+   Dodaj nową metodę wyswietl_macierz_sasiedztwa do istniejącej klasy Graf, która wyświetli
+   graf w postaci macierzy sąsiedztwa.
+
+Przykład:
+    Dodano krawędź: [A <-> B, w=2]
+    Dodano krawędź: [A <-> C, w=2]
+    Dodano krawędź: [B -> C, w=3]
+    Dodano krawędź: [C <-> D, w=4]
+    Dodano krawędź: [D <-> A, w=4]
+    Dodano krawędź: [D <-> B, w=4]
+
+    Macierz sąsiedztwa:
+       A B C D
+    A: 0 2 2 4
+    B: 2 0 3 4
+    C: 2 0 0 4
+    D: 4 4 4 0
+
+ *Nie zmieniaj pozostałych funkcjonalności klasy — dodaj tylko nową metodę.
+'''
+
+class Graph:
+    def __init__(self):
+        """Inicjalizuje graf jako słownik list sąsiedztwa."""
+        self.adjacency_list = {}
+        self.edges = {}  # Przechowuje krawędzie i ich wagi jako {(from, to): weight}
+
+    def add_node(self, node):
+        """Dodaje węzeł do grafu, jeśli jeszcze nie istnieje."""
+        if node in self.adjacency_list:
+            print(f"Węzeł '{node}' już istnieje.")
+        else:
+            self.adjacency_list[node] = []
+            print(f"Dodano węzeł '{node}'.")
+
+    def add_edge(self, from_node, to_node, weight=1):
+        """Dodaje krawędź między węzłami, tworząc brakujące węzły w razie potrzeby."""
+        if from_node not in self.adjacency_list:
+            print(f"Węzeł '{from_node}' nie istnieje. Dodawanie...")
+            self.add_node(from_node)
+        if to_node not in self.adjacency_list:
+            print(f"Węzeł '{to_node}' nie istnieje. Dodawanie...")
+            self.add_node(to_node)
+
+        if to_node in self.adjacency_list[from_node]:
+            print(f"Krawędź z '{from_node}' do '{to_node}' już istnieje.")
+        else:
+            self.adjacency_list[from_node].append(to_node)
+            self.edges[(from_node, to_node)] = weight
+            print(f"Dodano krawędź: [{from_node} -> {to_node}, w={weight}]")
+
+    def display(self):
+        """Wyświetla graf jako listę sąsiedztwa."""
+        print("Graf (lista sąsiedztwa):")
+        for node, neighbors in self.adjacency_list.items():
+            edges = ", ".join(f"{neighbor}(w={self.edges[(node, neighbor)]})" for neighbor in neighbors)
+            print(f"{node}: {edges if edges else 'Brak połączeń'}")
+
+    def wyswietl_macierz_sasiedztwa(self):
+        """Wyświetla graf w postaci macierzy sąsiedztwa."""
+        nodes = list(self.adjacency_list.keys())
+        node_index = {node: idx for idx, node in enumerate(nodes)}
+        size = len(nodes)
+
+        # Tworzenie macierzy sąsiedztwa
+        matrix = [[0] * size for _ in range(size)]
+
+        for (from_node, to_node), weight in self.edges.items():
+            i, j = node_index[from_node], node_index[to_node]
+            matrix[i][j] = weight
+            if (to_node, from_node) in self.edges or (from_node, to_node) in self.edges:
+                matrix[j][i] = weight
+
+        # Wyświetlanie macierzy
+        print("\nMacierz sąsiedztwa:")
+        print("   " + " ".join(nodes))
+        for i, row in enumerate(matrix):
+            print(f"{nodes[i]}: " + " ".join(map(str, row)))
+
+# Przykład użycia
+if __name__ == "__main__":
+    graph = Graph()
+
+    # Dodawanie węzłów i krawędzi
+    graph.add_edge("A", "B", 2)
+    graph.add_edge("A", "C", 2)
+    graph.add_edge("B", "C", 3)
+    graph.add_edge("C", "D", 4)
+    graph.add_edge("D", "A", 4)
+    graph.add_edge("D", "B", 4)
+
+    # Wyświetlenie grafu jako lista sąsiedztwa i macierz sąsiedztwa
+    graph.display()
+    graph.wyswietl_macierz_sasiedztwa()

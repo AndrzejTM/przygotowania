@@ -1,0 +1,20 @@
+[
+    {
+        "nazwa": "Produkt A",
+        "kategoria": "Kategoria 1",
+        "cena": 100.0,
+        "ilosc": 5
+    },
+    {
+        "nazwa": "Produkt B",
+        "kategoria": "Kategoria 2",
+        "cena": 50.0,
+        "ilosc": 10
+    },
+    {
+        "nazwa": "Produkt C",
+        "kategoria": "Kategoria 1",
+        "cena": 200.0,
+        "ilosc": 2
+    }
+]

@@ -1,0 +1,67 @@
+'''
+Przetestuj dzia³anie wyszukiwania binarnego na posortowanych i niesortowanych listach. 
+Wyjaœnij ró¿nice w wynikach w formie komentarza. 
+
+import time
+def zmierz_czas_sortowania(func, lista):
+	start = time.time()    
+	func()    
+	koniec = time.time()    
+	return koniec - star
+'''
+
+import time
+
+# Wyszukiwanie binarne
+def binary_search(sorted_list, target):
+    """
+    Wykonuje wyszukiwanie binarne w posortowanej liœcie.
+    Zwraca indeks elementu, jeœli znajdzie, w przeciwnym razie -1.
+    """
+    left, right = 0, len(sorted_list) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if sorted_list[mid] == target:
+            return mid
+        elif sorted_list[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+# Wyszukiwanie liniowe
+def linear_search(lst, target):
+    """
+    Wykonuje wyszukiwanie liniowe w dowolnej liœcie.
+    Zwraca indeks elementu, jeœli znajdzie, w przeciwnym razie -1.
+    """
+    for i, element in enumerate(lst):
+        if element == target:
+            return i
+    return -1
+
+# Funkcja do mierzenia czasu wyszukiwania
+def zmierz_czas_wyszukiwania(func, lst, target):
+    start = time.time()
+    func(lst, target)
+    koniec = time.time()
+    return koniec - start
+
+# Testowanie porównania czasów
+def test_comparison():
+    # Przygotowanie danych
+    sorted_list = [1, 3, 5, 7, 9, 11, 13, 15]
+    unsorted_list = [11, 7, 1, 15, 3, 13, 5, 9]
+    target = 7
+
+    # Czas wyszukiwania binarnego w liœcie posortowanej
+    print("Czas wyszukiwania binarnego w liœcie posortowanej:")
+    czas_binarny = zmierz_czas_wyszukiwania(binary_search, sorted_list, target)
+    print(f"Czas: {czas_binarny:.8f} sekundy")
+
+    # Czas wyszukiwania liniowego w liœcie nieposortowanej
+    print("\nCzas wyszukiwania liniowego w liœcie nieposortowanej:")
+    czas_liniowy = zmierz_czas_wyszukiwania(linear_search, unsorted_list, target)
+    print(f"Czas: {czas_liniowy:.8f} sekundy")
+
+test_comparison()

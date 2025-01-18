@@ -1,0 +1,41 @@
+'''
+Napisz funkcjê implementuj¹c¹ algorytm sortowania szybkiego. U¿yj pierwszego elementu jako pivotu.
+'''
+
+def quicksort(arr):
+    """
+    Sortowanie szybie (Quicksort) - prosta wersja dla pocz¹tkuj¹cych.
+
+    :param arr: Lista elementów do posortowania
+    :return: Posortowana lista
+    """
+    # Jeœli lista jest pusta lub ma jeden element, nie trzeba jej sortowaæ
+    if len(arr) <= 1:
+        return arr
+
+    # Pierwszy element staje siê pivotem (punktem odniesienia)
+    pivot = arr[0]
+
+    # Tworzymy dwie nowe listy:
+    # - Jedna dla elementów mniejszych lub równych pivotowi
+    # - Druga dla elementów wiêkszych od pivotu
+    mniejsze = []
+    wieksze = []
+
+    # Przechodzimy przez pozosta³e elementy i dzielimy je na dwie grupy
+    for element in arr[1:]:
+        if element <= pivot:
+            mniejsze.append(element)
+        else:
+            wieksze.append(element)
+
+    # Rekurencyjnie sortujemy obie grupy i ³¹czymy je z pivotem
+    return quicksort(mniejsze) + [pivot] + quicksort(wieksze)
+
+# Przyk³ad u¿ycia:
+# lista = [10, 7, 8, 9, 1, 5]
+# posortowana_lista = quicksort(lista)
+# print(posortowana_lista)
+
+'''
+

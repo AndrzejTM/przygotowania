@@ -1,0 +1,48 @@
+'''
+Przygotuj grê, w której gracze musz¹ rêcznie uporz¹dkowaæ listê liczb 
+wed³ug okreœlonego algorytmu (np. b¹belkowego). SprawdŸ, czy stosuj¹ w³aœciwe kroki algorytmu
+'''
+import random
+
+def generate_list(length=6, min_val=1, max_val=100):
+    """Generuje losow¹ listê liczb."""
+    return random.sample(range(min_val, max_val), length)
+
+def display_list(lst):
+    """Wyœwietla listê w ³adnym formacie."""
+    print("Aktualna lista:", lst)
+
+def bubble_sort_simulation():
+    """Gra w manualne sortowanie listy algorytmem b¹belkowym."""
+    print("Witaj w grze sortowania b¹belkowego!")
+    print("Twoim zadaniem jest uporz¹dkowanie listy liczb rosn¹co.")
+    print("Bêdziesz zamieniaæ miejscami dwie liczby, aby zastosowaæ algorytm b¹belkowy.")
+    
+    lst = generate_list()
+    n = len(lst)
+    sorted_lst = sorted(lst)
+    display_list(lst)
+
+    while lst != sorted_lst:
+        print("\nPodaj dwa indeksy (np. 0 1), które chcesz zamieniæ miejscami:")
+        try:
+            i, j = map(int, input("Indeksy: ").split())
+            if i < 0 or j < 0 or i >= n or j >= n:
+                print("Nieprawid³owe indeksy! Spróbuj ponownie.")
+                continue
+            
+            # Sprawdzenie poprawnoœci zamiany wed³ug algorytmu b¹belkowego
+            if abs(i - j) == 1 and lst[i] > lst[j]:
+                lst[i], lst[j] = lst[j], lst[i]  # Zamiana miejscami
+                print("Prawid³owy krok!")
+            else:
+                print("Nieprawid³owy krok. W algorytmie b¹belkowym mo¿na zamieniaæ tylko s¹siednie elementy w z³ej kolejnoœci.")
+            
+            display_list(lst)
+        except ValueError:
+            print("WprowadŸ dwa prawid³owe indeksy oddzielone spacj¹.")
+    
+    print("\nGratulacje! Posortowa³eœ listê:", lst)
+
+# Wywo³aj funkcjê gry
+# bubble_sort_simulation()

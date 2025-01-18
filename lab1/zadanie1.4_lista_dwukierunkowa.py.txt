@@ -1,0 +1,93 @@
+'''
+Zaimplementuj klasę reprezentującą listę dwukierunkową opartą na klasach w języku Python bez korzystania z wbudowanej listy ([]) ani żadnych gotowych struktur. Lista powinna umożliwiać podstawowe operacje :
+▪
+Dodawanie,
+▪
+Usuwanie,
+▪
+Wyświetlanie elementów listy.
+'''
+
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+        self.prev = None
+
+class DoublyLinkedList:
+    def __init__(self):
+        self.head = None
+        self.tail = None
+
+    def add_at_beginning(self, value):
+        """Dodaje element na początku listy."""
+        new_node = Node(value)
+        if not self.head:  # Lista jest pusta
+            self.head = self.tail = new_node
+        else:
+            new_node.next = self.head
+            self.head.prev = new_node
+            self.head = new_node
+
+    def add_at_end(self, value):
+        """Dodaje element na końcu listy."""
+        new_node = Node(value)
+        if not self.tail:  # Lista jest pusta
+            self.head = self.tail = new_node
+        else:
+            new_node.prev = self.tail
+            self.tail.next = new_node
+            self.tail = new_node
+
+    def remove_from_beginning(self):
+        """Usuwa pierwszy element z listy."""
+        if not self.head:  # Lista jest pusta
+            raise ValueError("Lista jest pusta.")
+        if self.head == self.tail:  # Jeden element w liście
+            self.head = self.tail = None
+        else:
+            self.head = self.head.next
+            self.head.prev = None
+
+    def remove_from_end(self):
+        """Usuwa ostatni element z listy."""
+        if not self.tail:  # Lista jest pusta
+            raise ValueError("Lista jest pusta.")
+        if self.head == self.tail:  # Jeden element w liście
+            self.head = self.tail = None
+        else:
+            self.tail = self.tail.prev
+            self.tail.next = None
+
+    def display_forward(self):
+        """Wyświetla elementy listy od początku do końca."""
+        elements = []
+        current = self.head
+        while current:
+            elements.append(current.value)
+            current = current.next
+        return elements
+
+    def display_backward(self):
+        """Wyświetla elementy listy od końca do początku."""
+        elements = []
+        current = self.tail
+        while current:
+            elements.append(current.value)
+            current = current.prev
+        return elements
+
+# Przykładowe użycie
+if __name__ == "__main__":
+    lista = DoublyLinkedList()
+    lista.add_at_beginning(10)
+    lista.add_at_beginning(20)
+    lista.add_at_end(30)
+    print("Lista od początku do końca:", lista.display_forward())
+    print("Lista od końca do początku:", lista.display_backward())
+
+    lista.remove_from_beginning()
+    print("Lista po usunięciu z początku:", lista.display_forward())
+
+    lista.remove_from_end()
+    print("Lista po usunięciu z końca:", lista.display_forward())
