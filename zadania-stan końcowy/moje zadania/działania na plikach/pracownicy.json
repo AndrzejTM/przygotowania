@@ -1,0 +1,27 @@
+[
+    {
+        "Imię": "Kuba",
+        "Wiek": 25,
+        "Dział": "IT"
+    },
+    {
+        "Imię": "Anna",
+        "Wiek": 35,
+        "Dział": "HR"
+    },
+    {
+        "Imię": "Marek",
+        "Wiek": 45,
+        "Dział": "IT"
+    },
+    {
+        "Imię": "Zofia",
+        "Wiek": 50,
+        "Dział": "Księgowość"
+    },
+    {
+        "Imię": "Tomasz",
+        "Wiek": 28,
+        "Dział": "IT"
+    }
+]
